@@ -17,7 +17,26 @@
         "command": "hackathon.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "chatParticipants": [ 
+            {
+                "id": "testcase-error-finder",
+                "name": "errorfinder",
+                "fullName": "Test Case Error Finder",
+                "description": "Find errors in test cases and create Jira tickets",
+                "isSticky": true,
+                "commands": [
+                {
+                    "name": "finderrors", 
+                    "description": "Analyze test cases and find errors"
+                },
+                {
+                    "name": "createJiraTicket", 
+                    "description": "Create a Jira ticket for the detected error"
+                }
+            ]
+            }
+        ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
