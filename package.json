@@ -9,8 +9,16 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:extension.scanCodeForDefects",
+    "onCommand:extension.createJiraTicket",
+    "onCommand:extension.runTestCoverageAnalysis",
+    "onCommand:extension.viewOutstandingTickets",
+    "onCommand:extension.lintChecks",
+    "onCommand:extension.codeExplanation"
+  ],
   "main": "./out/extension.js",
+  
   "contributes": {
     "commands": [
       {
@@ -41,7 +49,34 @@
         "command": "hackathon.codeExplanation",
         "title": "Explain this code"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "hackathon.scanForDefects",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "hackathon.createJiraTicket",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "hackathon.runTestCoverageAnalysis",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "hackathon.viewOutstandingTickets",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "hackathon.lintChecks",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "hackathon.codeExplanation",
+          "when": "editorTextFocus"
+        }
+      ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -61,5 +96,6 @@
     "typescript": "^5.5.4",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1"
+  }
   }
 }
