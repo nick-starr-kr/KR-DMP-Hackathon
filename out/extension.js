@@ -33,7 +33,7 @@ const agent_1 = require("./agent");
 // Your extension is activated the very first time the command is executed
 function activate(context) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
+    // This line of c`ode will only be executed once when your extension is activated
     console.log('Congratulations, your extension "hackathon" is now active!');
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
