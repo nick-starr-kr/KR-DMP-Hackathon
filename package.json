@@ -10,12 +10,13 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.scanCodeForDefects",
-    "onCommand:extension.createJiraTicket",
-    "onCommand:extension.runTestCoverageAnalysis",
-    "onCommand:extension.viewOutstandingTickets",
-    "onCommand:extension.lintChecks",
-    "onCommand:extension.codeExplanation"
+    "onCommand:hackathon.scanCodeForDefects",
+    "onCommand:hackathon.createJiraTicket",
+    "onCommand:hackathon.runTestCoverageAnalysis",
+    "onCommand:hackathon.viewOutstandingTickets",
+    "onCommand:hackathon.lintChecks",
+    "onCommand:hackathon.codeExplanation",
+    "onCommand:hackathon.generateUnitTests"
   ],
   "main": "./out/extension.js",
   
@@ -48,6 +49,10 @@
       {
         "command": "hackathon.codeExplanation",
         "title": "Explain this code"
+      },
+      {
+        "command": "hackathon.generateUnitTests",
+        "title": "Generate unit tests"
       }
     ],
     "menus": {
@@ -74,6 +79,10 @@
         },
         {
           "command": "hackathon.codeExplanation",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "hackathon.generateUnitTests",
           "when": "editorTextFocus"
         }
       ]

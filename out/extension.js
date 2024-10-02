@@ -67,12 +67,17 @@ function activate(context) {
         vscode.window.showInformationMessage('Running a lint check...');
         // TODO: Call the function to conduct a lint check
     });
-    // Lint check
+    // Explain Code
     let codeExplanation = vscode.commands.registerCommand('hackathon.codeExplanation', () => {
         vscode.window.showInformationMessage('Collecting explanation for the code...');
         // TODO: Call the function to explain a given code
     });
-    context.subscriptions.push(disposable, scanCodeForDefects, createJiraTicket, runTestCoverageAnalysis, viewOutstandingTickets, lintChecks, codeExplanation);
+    // Generate Unit Tests
+    let generateUnitTests = vscode.commands.registerCommand('hackathon.generateUnitTests', () => {
+        vscode.window.showInformationMessage('Generating unit tests...');
+        // TODO: Call the function to generate unit tests
+    });
+    context.subscriptions.push(disposable, scanCodeForDefects, createJiraTicket, runTestCoverageAnalysis, viewOutstandingTickets, lintChecks, codeExplanation, generateUnitTests);
 }
 // This method is called when your extension is deactivated
 function deactivate() { }
