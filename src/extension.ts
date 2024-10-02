@@ -20,7 +20,6 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Hello World from Hackathon!');
 	});
 
-<<<<<<< HEAD
 
 	const chatHandler: vscode.ChatRequestHandler = async (
 		request: vscode.ChatRequest,
@@ -48,9 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register the chat participant and its request handler
 	const hackChat = vscode.chat.createChatParticipant('chat-participant.hackathon', chatHandler);	
-	context.subscriptions.push(hackChat,disposable);
-=======
-	// Scan Code for Defects
+\	// Scan Code for Defects
     let scanCodeForDefects = vscode.commands.registerCommand('hackathon.scanCodeForDefects', () => {
         vscode.window.showInformationMessage('Scanning code for defects...');
         // TODO: Call linting function here
@@ -92,8 +89,7 @@ export function activate(context: vscode.ExtensionContext) {
         // TODO: Call the function to generate unit tests
     });
 
-	context.subscriptions.push(disposable, scanCodeForDefects, createJiraTicket, runTestCoverageAnalysis, viewOutstandingTickets, lintChecks, codeExplanation, generateUnitTests);
->>>>>>> main
+	context.subscriptions.push(disposable, hackChat, scanCodeForDefects, createJiraTicket, runTestCoverageAnalysis, viewOutstandingTickets, lintChecks, codeExplanation, generateUnitTests);
 }
 
 // This method is called when your extension is deactivated
