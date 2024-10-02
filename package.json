@@ -9,13 +9,50 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:hackathon.scanCodeForDefects",
+    "onCommand:hackathon.createJiraTicket",
+    "onCommand:hackathon.runTestCoverageAnalysis",
+    "onCommand:hackathon.viewOutstandingTickets",
+    "onCommand:hackathon.lintChecks",
+    "onCommand:hackathon.codeExplanation",
+    "onCommand:hackathon.generateUnitTests"
+  ],
   "main": "./out/extension.js",
+  
   "contributes": {
     "commands": [
       {
         "command": "hackathon.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "hackathon.scanForDefects",
+        "title": "Scan Code for Defects"
+      },
+      {
+        "command": "hackathon.createJiraTicket",
+        "title": "Create a Jira Ticket for Defect"
+      },
+      {
+        "command": "hackathon.runTestCoverageAnalysis",
+        "title": "Run Test Coverage Analysis"
+      },
+      {
+        "command": "hackathon.viewOutstandingTickets",
+        "title": "View Outstanding Tickets"
+      },
+      {
+        "command": "hackathon.lintChecks",
+        "title": "Conduct a Lint Check"
+      },
+      {
+        "command": "hackathon.codeExplanation",
+        "title": "Explain this code"
+      },
+      {
+        "command": "hackathon.generateUnitTests",
+        "title": "Generate unit tests"
       }
     ],
     "chatParticipants": [
@@ -32,7 +69,38 @@
           }
         ]
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "hackathon.scanForDefects",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "hackathon.createJiraTicket",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "hackathon.runTestCoverageAnalysis",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "hackathon.viewOutstandingTickets",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "hackathon.lintChecks",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "hackathon.codeExplanation",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "hackathon.generateUnitTests",
+          "when": "editorTextFocus"
+        }
+      ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -58,5 +126,6 @@
     "@langchain/core": "^0.3.6",
     "@langchain/langgraph": "^0.2.10",
     "@langchain/openai": "^0.3.4"
+  }
   }
 }
