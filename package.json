@@ -16,6 +16,30 @@
       {
         "command": "hackathon.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "hackathon.scanForDefects",
+        "title": "Scan Code for Defects"
+      },
+      {
+        "command": "hackathon.createJiraTicket",
+        "title": "Create a Jira Ticket for Defect"
+      },
+      {
+        "command": "hackathon.runTestCoverageAnalysis",
+        "title": "Run Test Coverage Analysis"
+      },
+      {
+        "command": "hackathon.viewOutstandingTickets",
+        "title": "View Outstanding Tickets"
+      },
+      {
+        "command": "hackathon.lintChecks",
+        "title": "Conduct a Lint Check"
+      },
+      {
+        "command": "hackathon.codeExplanation",
+        "title": "Explain this code"
       }
     ]
   },

@@ -19,7 +19,43 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Hello World from Hackathon!');
 	});
 
-	context.subscriptions.push(disposable);
+	// Scan Code for Defects
+    let scanCodeForDefects = vscode.commands.registerCommand('extension.scanCodeForDefects', () => {
+        vscode.window.showInformationMessage('Scanning code for defects...');
+        // TODO: Call linting function here
+    });
+    
+    // Create JIRA Ticket for Defects
+    let createJiraTicket = vscode.commands.registerCommand('extension.createJiraTicket', () => {
+        vscode.window.showInformationMessage('Creating JIRA ticket...');
+        // TODO: Call JIRA integration function here
+    });
+
+	// Run Test Coverage Analysis
+    let runTestCoverageAnalysis = vscode.commands.registerCommand('extension.runTestCoverageAnalysis', () => {
+        vscode.window.showInformationMessage('Running test coverage analysis...');
+        // TODO: Call the function to run test coverage analysis
+    });
+	
+	// View Outstanding JIRA Tickets for the codebase
+    let viewOutstandingTickets = vscode.commands.registerCommand('extension.viewOutstandingTickets', () => {
+        vscode.window.showInformationMessage('Gathering outstanding JIRA Tickets...');
+        // TODO: Call the function to view outstanding JIRA Tickets
+    });
+
+	// Lint check
+    let lintChecks = vscode.commands.registerCommand('extension.lintChecks', () => {
+        vscode.window.showInformationMessage('Running a lint check...');
+        // TODO: Call the function to conduct a lint check
+    });
+
+	// Lint check
+    let codeExplanation = vscode.commands.registerCommand('extension.codeExplanation', () => {
+        vscode.window.showInformationMessage('Collecting explanation for the code...');
+        // TODO: Call the function to explain a given code
+    });
+
+	context.subscriptions.push(disposable, scanCodeForDefects, createJiraTicket, runTestCoverageAnalysis, viewOutstandingTickets, lintChecks, codeExplanation);
 }
 
 // This method is called when your extension is deactivated
