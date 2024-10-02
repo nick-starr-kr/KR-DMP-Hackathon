@@ -17,6 +17,21 @@
         "command": "hackathon.helloWorld",
         "title": "Hello World"
       }
+    ],
+    "chatParticipants": [
+      {
+        "id": "chat-participant.hackathon",
+        "name": "hackchat",
+        "fullName": "HackChat",
+        "description": "Hi! I'm HackChat!",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "testCommand",
+            "description": "Test command!"
+          }
+        ]
+      }
     ]
   },
   "scripts": {
@@ -28,14 +43,20 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.54.0",
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
+    "@types/vscode": "^1.54.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
-    "eslint": "^9.9.1",
-    "typescript": "^5.5.4",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.9.1",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "@langchain/community": "^0.3.4",
+    "@langchain/core": "^0.3.6",
+    "@langchain/langgraph": "^0.2.10",
+    "@langchain/openai": "^0.3.4"
   }
 }
