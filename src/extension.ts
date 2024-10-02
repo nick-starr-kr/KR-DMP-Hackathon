@@ -47,7 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register the chat participant and its request handler
 	const hackChat = vscode.chat.createChatParticipant('chat-participant.hackathon', chatHandler);	
-\	// Scan Code for Defects
+	// Scan Code for Defects
     let scanCodeForDefects = vscode.commands.registerCommand('hackathon.scanCodeForDefects', () => {
         vscode.window.showInformationMessage('Scanning code for defects...');
         // TODO: Call linting function here
