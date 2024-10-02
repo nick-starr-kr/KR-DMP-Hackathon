@@ -12,7 +12,7 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 
 // Define the tools for the agent to use
 const agentTools = [new TavilySearchResults({ maxResults: 3 })];
-const agentModel = new ChatOpenAI({ temperature: 0 });
+const agentModel = new ChatOpenAI({ model: "gpt-4o",temperature: 0 });
 
 // Initialize memory to persist state between graph runs
 const agentCheckpointer = new MemorySaver();

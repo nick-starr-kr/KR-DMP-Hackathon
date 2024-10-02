@@ -58,7 +58,7 @@ function activate(context) {
             return {};
         }
         else {
-            stream.progress('You\'re not using a command at all!');
+            stream.progress(await (0, agent_1.handleChatPrompt)(request.prompt));
             return {};
         }
     };

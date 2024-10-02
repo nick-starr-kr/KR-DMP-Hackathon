@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 			stream.progress(await handleChatPrompt(request.prompt));
 			return {};
 		  } else {
-			stream.progress('You\'re not using a command at all!');
+			stream.progress(await handleChatPrompt(request.prompt));
 			return {};
 		  }
 	  };
