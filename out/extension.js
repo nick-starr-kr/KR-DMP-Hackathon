@@ -43,32 +43,32 @@ function activate(context) {
         vscode.window.showInformationMessage('Hello World from Hackathon!');
     });
     // Scan Code for Defects
-    let scanCodeForDefects = vscode.commands.registerCommand('extension.scanCodeForDefects', () => {
+    let scanCodeForDefects = vscode.commands.registerCommand('hackathon.scanCodeForDefects', () => {
         vscode.window.showInformationMessage('Scanning code for defects...');
         // TODO: Call linting function here
     });
     // Create JIRA Ticket for Defects
-    let createJiraTicket = vscode.commands.registerCommand('extension.createJiraTicket', () => {
+    let createJiraTicket = vscode.commands.registerCommand('hackathon.createJiraTicket', () => {
         vscode.window.showInformationMessage('Creating JIRA ticket...');
         // TODO: Call JIRA integration function here
     });
     // Run Test Coverage Analysis
-    let runTestCoverageAnalysis = vscode.commands.registerCommand('extension.runTestCoverageAnalysis', () => {
+    let runTestCoverageAnalysis = vscode.commands.registerCommand('hackathon.runTestCoverageAnalysis', () => {
         vscode.window.showInformationMessage('Running test coverage analysis...');
         // TODO: Call the function to run test coverage analysis
     });
     // View Outstanding JIRA Tickets for the codebase
-    let viewOutstandingTickets = vscode.commands.registerCommand('extension.viewOutstandingTickets', () => {
+    let viewOutstandingTickets = vscode.commands.registerCommand('hackathon.viewOutstandingTickets', () => {
         vscode.window.showInformationMessage('Gathering outstanding JIRA Tickets...');
         // TODO: Call the function to view outstanding JIRA Tickets
     });
     // Lint check
-    let lintChecks = vscode.commands.registerCommand('extension.lintChecks', () => {
+    let lintChecks = vscode.commands.registerCommand('hackathon.lintChecks', () => {
         vscode.window.showInformationMessage('Running a lint check...');
         // TODO: Call the function to conduct a lint check
     });
     // Lint check
-    let codeExplanation = vscode.commands.registerCommand('extension.codeExplanation', () => {
+    let codeExplanation = vscode.commands.registerCommand('hackathon.codeExplanation', () => {
         vscode.window.showInformationMessage('Collecting explanation for the code...');
         // TODO: Call the function to explain a given code
     });
