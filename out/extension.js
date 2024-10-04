@@ -64,7 +64,42 @@ function activate(context) {
     };
     // Register the chat participant and its request handler
     const hackChat = vscode.chat.createChatParticipant('chat-participant.hackathon', chatHandler);
-    context.subscriptions.push(hackChat, disposable);
+    // Scan Code for Defects
+    let scanCodeForDefects = vscode.commands.registerCommand('hackathon.scanCodeForDefects', () => {
+        vscode.window.showInformationMessage('Scanning code for defects...');
+        // TODO: Call linting function here
+    });
+    // Create JIRA Ticket for Defects
+    let createJiraTicket = vscode.commands.registerCommand('hackathon.createJiraTicket', () => {
+        vscode.window.showInformationMessage('Creating JIRA ticket...');
+        // TODO: Call JIRA integration function here
+    });
+    // Run Test Coverage Analysis
+    let runTestCoverageAnalysis = vscode.commands.registerCommand('hackathon.runTestCoverageAnalysis', () => {
+        vscode.window.showInformationMessage('Running test coverage analysis...');
+        // TODO: Call the function to run test coverage analysis
+    });
+    // View Outstanding JIRA Tickets for the codebase
+    let viewOutstandingTickets = vscode.commands.registerCommand('hackathon.viewOutstandingTickets', () => {
+        vscode.window.showInformationMessage('Gathering outstanding JIRA Tickets...');
+        // TODO: Call the function to view outstanding JIRA Tickets
+    });
+    // Lint check
+    let lintChecks = vscode.commands.registerCommand('hackathon.lintChecks', () => {
+        vscode.window.showInformationMessage('Running a lint check...');
+        // TODO: Call the function to conduct a lint check
+    });
+    // Explain Code
+    let codeExplanation = vscode.commands.registerCommand('hackathon.codeExplanation', () => {
+        vscode.window.showInformationMessage('Collecting explanation for the code...');
+        // TODO: Call the function to explain a given code
+    });
+    // Generate Unit Tests
+    let generateUnitTests = vscode.commands.registerCommand('hackathon.generateUnitTests', () => {
+        vscode.window.showInformationMessage('Generating unit tests...');
+        // TODO: Call the function to generate unit tests
+    });
+    context.subscriptions.push(disposable, hackChat, scanCodeForDefects, createJiraTicket, runTestCoverageAnalysis, viewOutstandingTickets, lintChecks, codeExplanation, generateUnitTests);
 }
 // This method is called when your extension is deactivated
 function deactivate() { }

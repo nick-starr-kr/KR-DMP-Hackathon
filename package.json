@@ -54,7 +54,8 @@
         "command": "hackathon.generateUnitTests",
         "title": "Generate unit tests"
       }
-    ],
+    ]
+  },
     "chatParticipants": [
       {
         "id": "chat-participant.hackathon",
@@ -126,6 +127,5 @@
     "@langchain/core": "^0.3.6",
     "@langchain/langgraph": "^0.2.10",
     "@langchain/openai": "^0.3.4"
-  }
   }
 }
