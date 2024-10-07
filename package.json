@@ -19,7 +19,6 @@
     "onCommand:hackathon.generateUnitTests"
   ],
   "main": "./out/extension.js",
-  
   "contributes": {
     "commands": [
       {
@@ -54,9 +53,8 @@
         "command": "hackathon.generateUnitTests",
         "title": "Generate unit tests"
       }
-    ]
-  },
-    "chatParticipants": [
+    ],
+  "chatParticipants": [
       {
         "id": "chat-participant.hackathon",
         "name": "hackchat",
@@ -102,6 +100,7 @@
           "when": "editorTextFocus"
         }
       ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
