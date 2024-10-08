@@ -1,22 +1,14 @@
 {
   "name": "hackathon",
   "displayName": "Hackathon",
-  "description": "",
+  "description": "VS Code extension to identify code defects, run lint checks, create JIRA tickets, and more.",
   "version": "0.0.1",
+  "publisher": "your-name",
   "engines": {
-    "vscode": "^1.54.0"
+    "vscode": "^1.75.0" 
   },
   "categories": [
     "Other"
-  ],
-  "activationEvents": [
-    "onCommand:hackathon.scanCodeForDefects",
-    "onCommand:hackathon.createJiraTicket",
-    "onCommand:hackathon.runTestCoverageAnalysis",
-    "onCommand:hackathon.viewOutstandingTickets",
-    "onCommand:hackathon.lintChecks",
-    "onCommand:hackathon.codeExplanation",
-    "onCommand:hackathon.generateUnitTests"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -26,7 +18,7 @@
         "title": "Hello World"
       },
       {
-        "command": "hackathon.scanForDefects",
+        "command": "hackathon.scanCodeForDefects",
         "title": "Scan Code for Defects"
       },
       {
@@ -57,7 +49,7 @@
     "menus": {
       "editor/context": [
         {
-          "command": "hackathon.scanForDefects",
+          "command": "hackathon.scanCodeForDefects",
           "when": "editorTextFocus"
         },
         {
@@ -86,45 +78,50 @@
         }
       ]
     },
-    "scripts": {
-      "vscode:prepublish": "npm run compile",
-      "compile": "tsc -p ./",
-      "watch": "tsc -watch -p ./",
-      "pretest": "npm run compile && npm run lint",
-      "lint": "eslint src",
-      "test": "vscode-test"
-    },
-    "devDependencies": {
-      "@types/vscode": "^1.54.0",
-      "@types/mocha": "^10.0.7",
-      "@types/node": "20.x",
-      "@typescript-eslint/eslint-plugin": "^8.3.0",
-      "@typescript-eslint/parser": "^8.3.0",
-      "eslint": "^9.9.1",
-      "typescript": "^5.5.4",
-      "@vscode/test-cli": "^0.0.10",
-      "@vscode/test-electron": "^2.4.1"
-    },
     "configuration": {
+      "type": "object",
+      "title": "Hackathon Extension Configuration",
       "properties": {
         "jiraIntegration.baseUrl": {
           "type": "string",
           "default": "",
-          "description": "https://anushachitranshi.atlassian.net/"
+          "description": "Base URL for your JIRA instance (e.g., https://yourcompany.atlassian.net)"
         },
         "jiraIntegration.apiToken": {
           "type": "string",
           "default": "",
           "description": "Your JIRA API token."
+        },
+        "jiraIntegration.email": { 
+          "type": "string",
+          "default": "",
+          "description": "Your Atlassian account email address."
         }
       }
     }
   },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0", 
+    "@types/mocha": "^10.0.7",
+    "@types/node": "20.x",
+    "@typescript-eslint/eslint-plugin": "^8.3.0",
+    "@typescript-eslint/parser": "^8.3.0",
+    "eslint": "^9.9.1",
+    "typescript": "^5.5.4",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1"
+  },
   "dependencies": {
     "axios": "^1.7.7",
-    "console": "^0.7.2",
-    "node-fetch": "^3.3.2",
-    "requests": "^0.3.0",
-    "vscode": "^1.1.34"
+    "dotenv": "^16.4.5",
+    "node-fetch": "^3.3.2"
   }
 }
