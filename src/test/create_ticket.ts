@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import axios from 'axios';
 import * as dotenv from 'dotenv';
+import { JiraInputModal } from './jira_input_modal';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -12,54 +13,56 @@ if (!email || !apiToken) {
 }
 
 export default async function createJiraTicket() {
-    // Sample data, you may replace this with actual user input
-    const title = await vscode.window.showInputBox({ prompt: 'Enter ticket title' });
-    const description = await vscode.window.showInputBox({ prompt: 'Enter ticket description' });
-    const assignee = await vscode.window.showInputBox({ prompt: 'Enter assignee' });
-    const reporter = await vscode.window.showInputBox({ prompt: 'Enter reporter' });
+    const jiraInputModal = new JiraInputModal();
+    const { title, description, assignee, reporter } = await jiraInputModal.show();
 
     const jiraApiUrl = "https://anushachitranshi.atlassian.net/rest/api/2/issue";
 
-    // Sample JIRA ticket payload
     const payload = {
         fields: {
             project: {
-                key: 'SCRUM', 
+                key: 'SCRUM',
             },
-            summary: title || 'Default Title',
-            description: description || 'Default Description',
-            issuetype: {
+            summary: title,
+            description: description,
+            issuetype: [{
                 name: 'Task', // Change as needed
             },
+            {
+                name: 'Bug'
+            },
+            {
+                name: 'Story'
+            }],
             assignee: {
-                name: assignee || 'defaultAssignee', // Assignee field
+                name: assignee, // Assignee field
             },
             reporter: {
-                name: reporter || 'defaultReporter', // Reporter field
+                name: reporter, // Reporter field
             },
         },
     };
+
     vscode.window.showInformationMessage('Running test coverage analysis...');
-    // API Call
+
+    // API Call to create the JIRA ticket
     try {
         const response = await axios.post(jiraApiUrl, payload, {
             auth: {
-                username: email || "", // Load from environment variable
-                password: apiToken || "", // Load from environment variable
+                username: email || "",
+                password: apiToken || "",
             },
             headers: {
                 'Content-Type': 'application/json',
             },
         });
         vscode.window.showInformationMessage(`JIRA ticket created successfully: ${response.data.key}`);
-        
-    } catch (error: unknown) { // Explicitly typing error as unknown
+
+    } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
-            // Handle axios error
             vscode.window.showErrorMessage(`Error creating JIRA ticket: ${error.response?.data?.message || error.message}`);
         } else {
-            // Handle generic error
             vscode.window.showErrorMessage(`Error creating JIRA ticket: ${String(error)}`);
         }
     }
-    }
+}

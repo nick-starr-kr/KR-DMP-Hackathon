@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
-import createJiraTicket from './create_ticket'; // Ensure correct path and export
+import createJiraTicket from './test/create_ticket'; 
 
 // This method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
