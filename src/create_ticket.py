@@ -1,6 +1,12 @@
-import requests 
+import os
 import json
+import requests
+from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
+
+load_dotenv()
+email = os.getenv('ATLASSIAN_EMAIL')
+api_token = os.getenv('ATLASSIAN_API_TOKEN')
 
 url = "https://anushachitranshi.atlassian.net/rest/api/2/issue"
 
@@ -40,13 +46,14 @@ payload = json.dumps( {
   }
 } )
 
-response = requests.request(
-   "POST",
+auth = HTTPBasicAuth(email, api_token)
+
+response = requests.post(
    url,
    data=payload,
    headers=headers,
-   verify='https://github.com/nick-starr-kr/KR-DMP-Hackathon/blob/anusha/src/isrgrootx1.pem',
-   auth=("anusha.chitranshi@gmail.com", "ATATT3xFfGF0zOik8FtVkmYdmER2JluIOm6sQKdvluIIBKXKTHFEEgHey9R2BJvqrPmHes1Xgr68VYGcWPY_IhcXQJVUreeramkVe6DL94Cskc0QxmFCm8aLcI2AHfJ-9pAMo3CT9eqnc0M7yoI9ZPTlQfvtmx2QL-Ms38aRd8Cz5BBLIKUvqG4=98F27A26")
+   auth=auth,
+   verify=r"C:\Users\ac39920\AppData\Local\Programs\Python\Python313\Lib\site-packages\certifi\cacert.pem"
 )
 
-print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
+print(response.text)
