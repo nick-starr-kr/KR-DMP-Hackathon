@@ -1,6 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
 import createJiraTicket from './test/create_ticket'; 
+import { fetchAssignedIssues } from './test/fetch_issues';
+import { fetchUsers } from './test/fetch_users'; 
 
 // This method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -18,9 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     // Create JIRA Ticket Command
-    let createJiraTicketDisposable = vscode.commands.registerCommand('hackathon.createJiraTicket', () => {
-        vscode.window.showInputBox({ prompt: 'Enter ticket title' });
-    });
+    let createJiraTicketDisposable = vscode.commands.registerCommand('hackathon.createJiraTicket', createJiraTicket);
 
     // Run Test Coverage Analysis Command
     let runTestCoverageAnalysisDisposable = vscode.commands.registerCommand('hackathon.runTestCoverageAnalysis', () => {
@@ -29,9 +29,52 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     // View Outstanding JIRA Tickets Command
-    let viewOutstandingTicketsDisposable = vscode.commands.registerCommand('hackathon.viewOutstandingTickets', () => {
-        vscode.window.showInformationMessage('Gathering outstanding JIRA Tickets...');
-        // TODO: Call the function to view outstanding JIRA Tickets
+    let viewOutstandingTicketsDisposable = vscode.commands.registerCommand('hackathon.viewOutstandingTickets', async () => {
+        vscode.window.showInformationMessage('Fetching assigned JIRA issues...');
+
+        const users = await fetchUsers();
+        if (users.length === 0) {
+            vscode.window.showWarningMessage('No JIRA users found.');
+            return;
+        }
+    
+        const userItems = users.map(user => ({
+            label: user.displayName,
+            accountId: user.id 
+        }));
+    
+        const selectedUser = await vscode.window.showQuickPick(userItems, {
+            placeHolder: 'Select a JIRA user to view their assigned issues',
+            canPickMany: false
+        });
+    
+        
+        if (selectedUser) {
+            vscode.window.showInformationMessage(`Fetching issues for ${selectedUser.label}...`);
+    
+            const issues = await fetchAssignedIssues(selectedUser.accountId);
+
+        if (issues.length > 0) {
+            const issueItems = issues.map(issue => ({
+                label: `${issue.key} - ${issue.fields.summary}`,
+                detail: `Assigned to: ${issue.fields.assignee.displayName}`,
+                url: `https://anushachitranshi.atlassian.net/browse/${issue.key}`
+            }));
+    
+            const selectedIssue = await vscode.window.showQuickPick(issueItems, {
+                placeHolder: 'Select a JIRA issue to view details',
+                canPickMany: false 
+            });
+    
+            if (selectedIssue) {
+                vscode.env.openExternal(vscode.Uri.parse(selectedIssue.url));
+            }
+        } else {
+            vscode.window.showWarningMessage('No issues found assigned to you.');
+        }
+    } else {
+        vscode.window.showWarningMessage('No user selected.');
+    }
     });
 
     // Lint Checks Command

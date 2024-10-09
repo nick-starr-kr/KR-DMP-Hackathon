@@ -22,62 +22,94 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
 // The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = __importStar(require("vscode"));
+const create_ticket_1 = __importDefault(require("./test/create_ticket"));
+const fetch_issues_1 = require("./test/fetch_issues");
+const fetch_users_1 = require("./test/fetch_users");
 // This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 function activate(context) {
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "hackathon" is now active!');
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with registerCommand
-    // The commandId parameter must match the command field in package.json
-    const disposable = vscode.commands.registerCommand('hackathon.helloWorld', () => {
-        // The code you place here will be executed every time your command is executed
-        // Display a message box to the user
+    // Hello World Command
+    let helloWorldDisposable = vscode.commands.registerCommand('hackathon.helloWorld', () => {
         vscode.window.showInformationMessage('Hello World from Hackathon!');
     });
-    // Scan Code for Defects
-    let scanCodeForDefects = vscode.commands.registerCommand('hackathon.scanCodeForDefects', () => {
+    // Scan Code for Defects Command
+    let scanCodeForDefectsDisposable = vscode.commands.registerCommand('hackathon.scanCodeForDefects', () => {
         vscode.window.showInformationMessage('Scanning code for defects...');
         // TODO: Call linting function here
     });
-    // Create JIRA Ticket for Defects
-    let createJiraTicket = vscode.commands.registerCommand('hackathon.createJiraTicket', () => {
-        vscode.window.showInformationMessage('Creating JIRA ticket...');
-        // TODO: Call JIRA integration function here
-    });
-    // Run Test Coverage Analysis
-    let runTestCoverageAnalysis = vscode.commands.registerCommand('hackathon.runTestCoverageAnalysis', () => {
+    // Create JIRA Ticket Command
+    let createJiraTicketDisposable = vscode.commands.registerCommand('hackathon.createJiraTicket', create_ticket_1.default);
+    // Run Test Coverage Analysis Command
+    let runTestCoverageAnalysisDisposable = vscode.commands.registerCommand('hackathon.runTestCoverageAnalysis', () => {
         vscode.window.showInformationMessage('Running test coverage analysis...');
         // TODO: Call the function to run test coverage analysis
     });
-    // View Outstanding JIRA Tickets for the codebase
-    let viewOutstandingTickets = vscode.commands.registerCommand('hackathon.viewOutstandingTickets', () => {
-        vscode.window.showInformationMessage('Gathering outstanding JIRA Tickets...');
-        // TODO: Call the function to view outstanding JIRA Tickets
+    // View Outstanding JIRA Tickets Command
+    let viewOutstandingTicketsDisposable = vscode.commands.registerCommand('hackathon.viewOutstandingTickets', async () => {
+        vscode.window.showInformationMessage('Fetching assigned JIRA issues...');
+        const users = await (0, fetch_users_1.fetchUsers)();
+        if (users.length === 0) {
+            vscode.window.showWarningMessage('No JIRA users found.');
+            return;
+        }
+        const userItems = users.map(user => ({
+            label: user.displayName,
+            accountId: user.id
+        }));
+        const selectedUser = await vscode.window.showQuickPick(userItems, {
+            placeHolder: 'Select a JIRA user to view their assigned issues',
+            canPickMany: false
+        });
+        if (selectedUser) {
+            vscode.window.showInformationMessage(`Fetching issues for ${selectedUser.label}...`);
+            const issues = await (0, fetch_issues_1.fetchAssignedIssues)(selectedUser.accountId);
+            if (issues.length > 0) {
+                const issueItems = issues.map(issue => ({
+                    label: `${issue.key} - ${issue.fields.summary}`,
+                    detail: `Assigned to: ${issue.fields.assignee.displayName}`,
+                    url: `https://anushachitranshi.atlassian.net/browse/${issue.key}`
+                }));
+                const selectedIssue = await vscode.window.showQuickPick(issueItems, {
+                    placeHolder: 'Select a JIRA issue to view details',
+                    canPickMany: false
+                });
+                if (selectedIssue) {
+                    vscode.env.openExternal(vscode.Uri.parse(selectedIssue.url));
+                }
+            }
+            else {
+                vscode.window.showWarningMessage('No issues found assigned to you.');
+            }
+        }
+        else {
+            vscode.window.showWarningMessage('No user selected.');
+        }
     });
-    // Lint check
-    let lintChecks = vscode.commands.registerCommand('hackathon.lintChecks', () => {
+    // Lint Checks Command
+    let lintChecksDisposable = vscode.commands.registerCommand('hackathon.lintChecks', () => {
         vscode.window.showInformationMessage('Running a lint check...');
         // TODO: Call the function to conduct a lint check
     });
-    // Explain Code
-    let codeExplanation = vscode.commands.registerCommand('hackathon.codeExplanation', () => {
+    // Explain Code Command
+    let codeExplanationDisposable = vscode.commands.registerCommand('hackathon.codeExplanation', () => {
         vscode.window.showInformationMessage('Collecting explanation for the code...');
         // TODO: Call the function to explain a given code
     });
-    // Generate Unit Tests
-    let generateUnitTests = vscode.commands.registerCommand('hackathon.generateUnitTests', () => {
+    // Generate Unit Tests Command
+    let generateUnitTestsDisposable = vscode.commands.registerCommand('hackathon.generateUnitTests', () => {
         vscode.window.showInformationMessage('Generating unit tests...');
         // TODO: Call the function to generate unit tests
     });
-    context.subscriptions.push(disposable, scanCodeForDefects, createJiraTicket, runTestCoverageAnalysis, viewOutstandingTickets, lintChecks, codeExplanation, generateUnitTests);
+    // Add all disposables to context subscriptions
+    context.subscriptions.push(helloWorldDisposable, scanCodeForDefectsDisposable, createJiraTicketDisposable, runTestCoverageAnalysisDisposable, viewOutstandingTicketsDisposable, lintChecksDisposable, codeExplanationDisposable, generateUnitTestsDisposable);
 }
 // This method is called when your extension is deactivated
 function deactivate() { }

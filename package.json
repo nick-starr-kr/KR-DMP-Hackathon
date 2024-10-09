@@ -1,11 +1,10 @@
 {
   "name": "hackathon",
   "displayName": "Hackathon",
-  "description": "VS Code extension to identify code defects, run lint checks, create JIRA tickets, and more.",
+  "description": "",
   "version": "0.0.1",
-  "publisher": "your-name",
   "engines": {
-    "vscode": "^1.75.0" 
+    "vscode": "^1.54.0"
   },
   "categories": [
     "Other"
@@ -18,7 +17,7 @@
         "title": "Hello World"
       },
       {
-        "command": "hackathon.scanCodeForDefects",
+        "command": "hackathon.scanForDefects",
         "title": "Scan Code for Defects"
       },
       {
@@ -46,10 +45,25 @@
         "title": "Generate unit tests"
       }
     ],
+    "chatParticipants": [
+      {
+        "id": "chat-participant.hackathon",
+        "name": "hackchat",
+        "fullName": "HackChat",
+        "description": "Hi! I'm HackChat!",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "testCommand",
+            "description": "Test command!"
+          }
+        ]
+      }
+    ],
     "menus": {
       "editor/context": [
         {
-          "command": "hackathon.scanCodeForDefects",
+          "command": "hackathon.scanForDefects",
           "when": "editorTextFocus"
         },
         {
@@ -77,27 +91,6 @@
           "when": "editorTextFocus"
         }
       ]
-    },
-    "configuration": {
-      "type": "object",
-      "title": "Hackathon Extension Configuration",
-      "properties": {
-        "jiraIntegration.baseUrl": {
-          "type": "string",
-          "default": "",
-          "description": "Base URL for your JIRA instance (e.g., https://yourcompany.atlassian.net)"
-        },
-        "jiraIntegration.apiToken": {
-          "type": "string",
-          "default": "",
-          "description": "Your JIRA API token."
-        },
-        "jiraIntegration.email": { 
-          "type": "string",
-          "default": "",
-          "description": "Your Atlassian account email address."
-        }
-      }
     }
   },
   "scripts": {
@@ -109,18 +102,21 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.75.0", 
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
+    "@types/vscode": "^1.54.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
-    "eslint": "^9.9.1",
-    "typescript": "^5.5.4",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.9.1",
+    "typescript": "^5.6.2"
   },
   "dependencies": {
-    "axios": "^1.7.7",
+    "@langchain/community": "^0.3.4",
+    "@langchain/core": "^0.3.6",
+    "@langchain/langgraph": "^0.2.10",
+    "@langchain/openai": "^0.3.4",
     "dotenv": "^16.4.5",
     "node-fetch": "^3.3.2"
   }
