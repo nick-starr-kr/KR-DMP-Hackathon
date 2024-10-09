@@ -30,7 +30,7 @@ const jira_input_modal_1 = require("./jira_input_modal"); // Ensure this imports
 const dotenv = require('dotenv');
 dotenv.config();
 const email = process.env.ATLASSIAN_EMAIL || "anusha.chitranshi@gmail.com";
-const apiToken = process.env.ATLASSIAN_API_TOKEN || "ATATT3xFfGF0copIlxDooU627jALZJ7JL6bBkxBH__TXokM-fSmY-qCrQyCFni3EVSvZHL8eV9CcviFANcA2oUsmcg5LObHgH55dAt4Zktwzl25kVghbY7dl7-TjFFuOuvMlfZsCAglCepwR2tWqgcOQ5mjpc_shGGa3EX_WkQ2CerG6CAet1Ck=7FEFDAD8";
+const apiToken = process.env.ATLASSIAN_API_TOKEN;
 if (!email || !apiToken) {
     throw new Error("Missing JIRA credentials: Please set JIRA_EMAIL and JIRA_API_TOKEN in the .env file.");
 }
