@@ -26,7 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = createJiraTicket;
 const vscode = __importStar(require("vscode"));
 const fetch = async () => (await import('node-fetch')).default;
-const jira_input_modal_1 = require("./jira_input_modal"); // Ensure this imports correctly
+const jira_input_modal_1 = require("./jira_input_modal");
 const dotenv = require('dotenv');
 dotenv.config();
 const email = process.env.ATLASSIAN_EMAIL || "anusha.chitranshi@gmail.com";

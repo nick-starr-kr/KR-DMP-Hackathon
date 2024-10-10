@@ -25,6 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
     // Run Test Coverage Analysis Command
     let runTestCoverageAnalysisDisposable = vscode.commands.registerCommand('hackathon.runTestCoverageAnalysis', () => {
         vscode.window.showInformationMessage('Running test coverage analysis...');
+        console.log(process.env.ATLASSIAN_EMAIL);
         // TODO: Call the function to run test coverage analysis
     });
 

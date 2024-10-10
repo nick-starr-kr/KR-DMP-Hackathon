@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 const fetch = async () => (await import('node-fetch')).default;
-import { JiraInputModal } from './jira_input_modal'; // Ensure this imports correctly
+import { JiraInputModal } from './jira_input_modal'; 
 const dotenv = require('dotenv');
 dotenv.config();
 
