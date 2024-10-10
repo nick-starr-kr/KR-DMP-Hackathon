@@ -65,6 +65,34 @@
           {
             "name": "testCommand",
             "description": "Test command!"
+          },
+          {
+            "name": "scanForDefects",
+            "description": "Scan Code for Defects"
+          },
+          {
+            "name": "createJiraTicket",
+            "description": "Create a Jira Ticket for Defect"
+          },
+          {
+            "name": "runTestCoverageAnalysis",
+            "description": "Run Test Coverage Analysis"
+          },
+          {
+            "name": "viewOutstandingTickets",
+            "description": "View Outstanding Tickets"
+          },
+          {
+            "name": "lintChecks",
+            "description": "Conduct a Lint Check"
+          },
+          {
+            "name": "codeExplanation",
+            "description": "Explain this code"
+          },
+          {
+            "name": "generateUnitTests",
+            "description": "Generate unit tests"
           }
         ]
       }

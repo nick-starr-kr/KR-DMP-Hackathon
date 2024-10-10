@@ -57,13 +57,53 @@ function activate(context) {
             stream.progress(await (0, agent_1.handleChatPrompt)(request.prompt));
             return {};
         }
+        else if (request.command === 'scanForDefects') {
+        }
+        else if (request.command === 'createJiraTicket') {
+        }
+        else if (request.command === 'runTestCoverageAnalysis') {
+        }
+        else if (request.command === 'viewOutstandingTickets') {
+        }
+        else if (request.command === 'lintChecks') {
+        }
+        else if (request.command === 'codeExplanation') {
+        }
+        else if (request.command === 'generateUnitTests') {
+        }
+        // Handle the default case
         else {
             stream.progress(await (0, agent_1.handleChatPrompt)(request.prompt));
-            return {};
         }
+        return {};
     };
     // Register the chat participant and its request handler
     const hackChat = vscode.chat.createChatParticipant('chat-participant.hackathon', chatHandler);
+    // Register a follow-up provider
+    hackChat.followupProvider = {
+        provideFollowups(result, context, token) {
+            if (result.metadata?.command === 'testCommand') {
+                return [{
+                        prompt: 'Do you want to use a followup?',
+                        label: vscode.l10n.t('Followup Test Example')
+                    }];
+            }
+            else if (result.metadata?.command === 'scanForDefects') {
+            }
+            else if (result.metadata?.command === 'createJiraTicket') {
+            }
+            else if (result.metadata?.command === 'runTestCoverageAnalysis') {
+            }
+            else if (result.metadata?.command === 'viewOutstandingTickets') {
+            }
+            else if (result.metadata?.command === 'lintChecks') {
+            }
+            else if (result.metadata?.command === 'codeExplanation') {
+            }
+            else if (result.metadata?.command === 'generateUnitTests') {
+            }
+        }
+    };
     // Scan Code for Defects
     let scanCodeForDefects = vscode.commands.registerCommand('hackathon.scanCodeForDefects', () => {
         vscode.window.showInformationMessage('Scanning code for defects...');
