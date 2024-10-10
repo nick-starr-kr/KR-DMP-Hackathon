@@ -9,15 +9,6 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:hackathon.scanCodeForDefects",
-    "onCommand:hackathon.createJiraTicket",
-    "onCommand:hackathon.runTestCoverageAnalysis",
-    "onCommand:hackathon.viewOutstandingTickets",
-    "onCommand:hackathon.lintChecks",
-    "onCommand:hackathon.codeExplanation",
-    "onCommand:hackathon.generateUnitTests"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -97,6 +88,21 @@
         ]
       }
     ],
+    "chatParticipants": [
+      {
+        "id": "chat-participant.hackathon",
+        "name": "hackchat",
+        "fullName": "HackChat",
+        "description": "Hi! I'm HackChat!",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "testCommand",
+            "description": "Test command!"
+          }
+        ]
+      }
+    ],
     "menus": {
       "editor/context": [
         {
@@ -153,6 +159,8 @@
     "@langchain/community": "^0.3.4",
     "@langchain/core": "^0.3.6",
     "@langchain/langgraph": "^0.2.10",
-    "@langchain/openai": "^0.3.4"
+    "@langchain/openai": "^0.3.4",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^3.3.2"
   }
 }
