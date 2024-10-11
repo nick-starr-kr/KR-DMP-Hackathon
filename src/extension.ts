@@ -148,26 +148,26 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Register a follow-up provider
 	hackChat.followupProvider = {
-		provideFollowups(result: vscode.ChatResult, context: vscode.ChatContext, token: vscode.CancellationToken) {
+		provideFollowups(result: HackChatResult, context: vscode.ChatContext, token: vscode.CancellationToken) {
 			if (result.metadata.command === 'testCommand') {
 				return [{
 					prompt: 'Do you want to use a followup?',
 					label: vscode.l10n.t('Followup Test Example')
 				} satisfies vscode.ChatFollowup];
 			}
-			else if (result.metadata?.command === 'scanForDefects') {
+			else if (result.metadata.command === 'scanForDefects') {
 			}
-			else if (result.metadata?.command === 'createJiraTicket') {
+			else if (result.metadata.command === 'createJiraTicket') {
 			}
-			else if (result.metadata?.command === 'runTestCoverageAnalysis') {
+			else if (result.metadata.command === 'runTestCoverageAnalysis') {
 			}
-			else if (result.metadata?.command === 'viewOutstandingTickets') {
+			else if (result.metadata.command === 'viewOutstandingTickets') {
 			}
-			else if (result.metadata?.command === 'lintChecks') {
+			else if (result.metadata.command === 'lintChecks') {
 			}
-			else if (result.metadata?.command === 'codeExplanation') {
+			else if (result.metadata.command === 'codeExplanation') {
 			}
-			else if (result.metadata?.command === 'generateUnitTests') {
+			else if (result.metadata.command === 'generateUnitTests') {
 			}
 		}
 	};

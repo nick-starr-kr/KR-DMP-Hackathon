@@ -155,19 +155,19 @@ function activate(context) {
                         label: vscode.l10n.t('Followup Test Example')
                     }];
             }
-            else if (result.metadata?.command === 'scanForDefects') {
+            else if (result.metadata.command === 'scanForDefects') {
             }
-            else if (result.metadata?.command === 'createJiraTicket') {
+            else if (result.metadata.command === 'createJiraTicket') {
             }
-            else if (result.metadata?.command === 'runTestCoverageAnalysis') {
+            else if (result.metadata.command === 'runTestCoverageAnalysis') {
             }
-            else if (result.metadata?.command === 'viewOutstandingTickets') {
+            else if (result.metadata.command === 'viewOutstandingTickets') {
             }
-            else if (result.metadata?.command === 'lintChecks') {
+            else if (result.metadata.command === 'lintChecks') {
             }
-            else if (result.metadata?.command === 'codeExplanation') {
+            else if (result.metadata.command === 'codeExplanation') {
             }
-            else if (result.metadata?.command === 'generateUnitTests') {
+            else if (result.metadata.command === 'generateUnitTests') {
             }
         }
     };
