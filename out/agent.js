@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleChatPrompt = handleChatPrompt;
 // IMPORTANT - Add your API keys here. Be careful not to publish them.
-process.env.OPENAI_API_KEY = "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";
 process.env.TAVILY_API_KEY = "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";
 const tavily_search_1 = require("@langchain/community/tools/tavily_search");
 const openai_1 = require("@langchain/openai");
