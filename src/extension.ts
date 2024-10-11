@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import createJiraTicket from './test/create_ticket'; 
 import { fetchAssignedIssues } from './test/fetch_issues';
 import { fetchUsers } from './test/fetch_users'; 
-import { handleChatPrompt } from './agent';
+import { analyzeCodeQuality, handleChatPrompt } from './agent';
 
 interface HackChatResult extends vscode.ChatResult {
     metadata: {
@@ -123,6 +123,15 @@ export function activate(context: vscode.ExtensionContext) {
             return { metadata: { command: request.command } };
 		  } 
 		else if (request.command === 'scanForDefects') {
+            const document = vscode.window.activeTextEditor?.document;
+            if (document !== undefined) {
+                const uri = document.uri;
+                let diagnostics = vscode.languages.getDiagnostics(uri);
+                const code = document.getText();
+                console.log(JSON.stringify(diagnostics));
+                stream.progress(await analyzeCodeQuality(JSON.stringify(diagnostics), code));
+            }
+            return { metadata: { command: request.command } };
 		}
 		else if (request.command === 'createJiraTicket') {
 		}
@@ -156,6 +165,10 @@ export function activate(context: vscode.ExtensionContext) {
 				} satisfies vscode.ChatFollowup];
 			}
 			else if (result.metadata.command === 'scanForDefects') {
+                return [{
+					prompt: 'Just testing this out!',
+					label: vscode.l10n.t('Would you like to create a Jira ticket for these improvements?')
+				} satisfies vscode.ChatFollowup];
 			}
 			else if (result.metadata.command === 'createJiraTicket') {
 			}

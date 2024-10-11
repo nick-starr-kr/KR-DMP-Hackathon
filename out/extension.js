@@ -125,6 +125,15 @@ function activate(context) {
             return { metadata: { command: request.command } };
         }
         else if (request.command === 'scanForDefects') {
+            const document = vscode.window.activeTextEditor?.document;
+            if (document !== undefined) {
+                const uri = document.uri;
+                let diagnostics = vscode.languages.getDiagnostics(uri);
+                const code = document.getText();
+                console.log(JSON.stringify(diagnostics));
+                stream.progress(await (0, agent_1.analyzeCodeQuality)(JSON.stringify(diagnostics), code));
+            }
+            return { metadata: { command: request.command } };
         }
         else if (request.command === 'createJiraTicket') {
         }
@@ -156,6 +165,10 @@ function activate(context) {
                     }];
             }
             else if (result.metadata.command === 'scanForDefects') {
+                return [{
+                        prompt: 'Just testing this out!',
+                        label: vscode.l10n.t('Would you like to create a Jira ticket for these improvements?')
+                    }];
             }
             else if (result.metadata.command === 'createJiraTicket') {
             }
