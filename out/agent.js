@@ -20,8 +20,11 @@ const agent = (0, prebuilt_1.createReactAgent)({
     tools: agentTools,
     checkpointSaver: agentCheckpointer,
 });
-async function handleChatPrompt(prompt) {
-    const response = await agent.invoke({ messages: [new messages_1.HumanMessage(prompt)] }, { configurable: { thread_id: "42" } });
+async function handleChatPrompt(prompt, context) {
+    // Include the selected text as part of the human message
+    const message = context ? `${context}\n\n${prompt}` : prompt;
+    console.log("Prompt: ", message);
+    const response = await agent.invoke({ messages: [new messages_1.HumanMessage(message)] }, { configurable: { thread_id: "42" } });
     return response.messages[response.messages.length - 1].content;
 }
 async function analyzeCodeQuality(diagnostics, code) {

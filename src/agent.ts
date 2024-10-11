@@ -24,7 +24,7 @@ const agent = createReactAgent({
 export async function handleChatPrompt(prompt: string, context: string) {
     // Include the selected text as part of the human message
     const message = context ? `${context}\n\n${prompt}` : prompt;
-
+    console.log("Prompt: ", message);
     const response = await agent.invoke(
         { messages: [new HumanMessage(message)] },
         { configurable: { thread_id: "42" } });

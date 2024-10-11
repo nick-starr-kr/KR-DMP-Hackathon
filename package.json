@@ -45,82 +45,82 @@
         "title": "Generate unit tests"
       }
     ],
-  "chatParticipants": [
-    {
-      "id": "chat-participant.hackathon",
-      "name": "hackchat",
-      "fullName": "HackChat",
-      "description": "Hi! I'm HackChat!",
-      "isSticky": true,
-      "commands": [
+    "chatParticipants": [
+      {
+        "id": "chat-participant.hackathon",
+        "name": "hackchat",
+        "fullName": "HackChat",
+        "description": "Hi! I'm HackChat!",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "testCommand",
+            "description": "Test command!"
+          },
+          {
+            "name": "scanForDefects",
+            "description": "Scan Code for Defects"
+          },
+          {
+            "name": "createJiraTicket",
+            "description": "Create a Jira Ticket for Defect"
+          },
+          {
+            "name": "runTestCoverageAnalysis",
+            "description": "Run Test Coverage Analysis"
+          },
+          {
+            "name": "viewOutstandingTickets",
+            "description": "View Outstanding Tickets"
+          },
+          {
+            "name": "lintChecks",
+            "description": "Conduct a Lint Check"
+          },
+          {
+            "name": "codeExplanation",
+            "description": "Explain this code"
+          },
+          {
+            "name": "generateUnitTests",
+            "description": "Generate unit tests"
+          }
+        ]
+      }
+    ],
+    "menus": {
+      "editor/context": [
         {
-          "name": "testCommand",
-          "description": "Test command!"
+          "command": "hackathon.scanForDefects",
+          "when": "editorTextFocus"
         },
         {
-          "name": "scanForDefects",
-          "description": "Scan Code for Defects"
+          "command": "hackathon.createJiraTicket",
+          "when": "editorTextFocus"
         },
         {
-          "name": "createJiraTicket",
-          "description": "Create a Jira Ticket for Defect"
+          "command": "hackathon.runTestCoverageAnalysis",
+          "when": "editorTextFocus"
         },
         {
-          "name": "runTestCoverageAnalysis",
-          "description": "Run Test Coverage Analysis"
+          "command": "hackathon.viewOutstandingTickets",
+          "when": "editorTextFocus"
         },
         {
-          "name": "viewOutstandingTickets",
-          "description": "View Outstanding Tickets"
+          "command": "hackathon.lintChecks",
+          "when": "editorTextFocus"
         },
         {
-          "name": "lintChecks",
-          "description": "Conduct a Lint Check"
+          "command": "hackathon.codeExplanation",
+          "when": "editorTextFocus"
         },
         {
-          "name": "codeExplanation",
-          "description": "Explain this code"
-        },
-        {
-          "name": "generateUnitTests",
-          "description": "Generate unit tests"
+          "command": "hackathon.generateUnitTests",
+          "when": "editorTextFocus"
         }
       ]
     }
-  ],
-  "menus": {
-    "editor/context": [
-      {
-        "command": "hackathon.scanForDefects",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "hackathon.createJiraTicket",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "hackathon.runTestCoverageAnalysis",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "hackathon.viewOutstandingTickets",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "hackathon.lintChecks",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "hackathon.codeExplanation",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "hackathon.generateUnitTests",
-        "when": "editorTextFocus"
-      }
-    ]
-  }
-},
+  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
@@ -138,7 +138,7 @@
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
     "eslint": "^9.9.1",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   },
   "dependencies": {
     "@langchain/community": "^0.3.4",

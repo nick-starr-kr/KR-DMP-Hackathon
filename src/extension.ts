@@ -115,9 +115,9 @@ export function activate(context: vscode.ExtensionContext) {
         if (editor) {
             const selection = editor.selection;
             selectedText = editor.document.getText(selection);
-            vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+            console.log(`Selected text: ${selectedText}`);
         } else {
-            vscode.window.showInformationMessage('No active editor');
+            console.log('No active editor');
         }
         
 		// Chat request handler implementation goes here
