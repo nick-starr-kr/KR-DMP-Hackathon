@@ -109,6 +109,17 @@ export function activate(context: vscode.ExtensionContext) {
 		stream: vscode.ChatResponseStream,
 		token: vscode.CancellationToken
 	  ): Promise<HackChatResult> => {
+        // Extract selected text
+        const editor = vscode.window.activeTextEditor;
+        let selectedText = '';
+        if (editor) {
+            const selection = editor.selection;
+            selectedText = editor.document.getText(selection);
+            vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+        } else {
+            vscode.window.showInformationMessage('No active editor');
+        }
+        
 		// Chat request handler implementation goes here
 		// Test for the `test` command
 		if (request.command === 'testCommand') {
@@ -119,7 +130,7 @@ export function activate(context: vscode.ExtensionContext) {
 				command: 'hackathon.helloWorld',
 				title: vscode.l10n.t('Run test command')
   			});
-			stream.progress(await handleChatPrompt(request.prompt));
+			stream.progress(await handleChatPrompt(request.prompt, selectedText));
             return { metadata: { command: request.command } };
 		  } 
 		else if (request.command === 'scanForDefects') {
@@ -134,6 +145,13 @@ export function activate(context: vscode.ExtensionContext) {
             return { metadata: { command: request.command } };
 		}
 		else if (request.command === 'createJiraTicket') {
+            if (editor) {
+                const selection = editor.selection;
+                const selectedText = editor.document.getText(selection);
+                vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+            } else {
+                vscode.window.showInformationMessage('No active editor');
+            }
 		}
 		else if (request.command === 'runTestCoverageAnalysis') {
 		}
@@ -146,7 +164,7 @@ export function activate(context: vscode.ExtensionContext) {
 		else if (request.command === 'generateUnitTests') {
 		}
 		else {
-		    stream.progress(await handleChatPrompt(request.prompt));
+			stream.progress(await handleChatPrompt(request.prompt, selectedText));
             return { metadata: { command: '' }};
 		  }
           return { metadata: { command: '' }};

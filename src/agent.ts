@@ -21,9 +21,12 @@ const agent = createReactAgent({
   checkpointSaver: agentCheckpointer,
 });
 
-export async function handleChatPrompt(prompt: string) {
+export async function handleChatPrompt(prompt: string, context: string) {
+    // Include the selected text as part of the human message
+    const message = context ? `${context}\n\n${prompt}` : prompt;
+
     const response = await agent.invoke(
-        { messages: [new HumanMessage(prompt)] },
+        { messages: [new HumanMessage(message)] },
         { configurable: { thread_id: "42" } });
         return response.messages[response.messages.length - 1].content;
 }
