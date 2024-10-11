@@ -2,8 +2,8 @@
 // agent.ts
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleChatPrompt = handleChatPrompt;
+exports.analyzeCodeQuality = analyzeCodeQuality;
 // IMPORTANT - Add your API keys here. Be careful not to publish them.
-process.env.OPENAI_API_KEY = "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";
 process.env.TAVILY_API_KEY = "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";
 const tavily_search_1 = require("@langchain/community/tools/tavily_search");
 const openai_1 = require("@langchain/openai");
@@ -22,6 +22,12 @@ const agent = (0, prebuilt_1.createReactAgent)({
 });
 async function handleChatPrompt(prompt) {
     const response = await agent.invoke({ messages: [new messages_1.HumanMessage(prompt)] }, { configurable: { thread_id: "42" } });
+    return response.messages[response.messages.length - 1].content;
+}
+async function analyzeCodeQuality(diagnostics, code) {
+    const response = await agent.invoke({ messages: [new messages_1.SystemMessage("You are a digital programming assistant designed to help engineers improve the quality of their code."),
+            new messages_1.SystemMessage("You will be provided a JSON array of diagnostic messages, followed by the source code that generated them. Analyze both the code and the dianogstics and summarize areas of improvement"),
+            new messages_1.HumanMessage(diagnostics + "\n" + code)] }, { configurable: { thread_id: "42" } });
     return response.messages[response.messages.length - 1].content;
 }
 //# sourceMappingURL=agent.js.map

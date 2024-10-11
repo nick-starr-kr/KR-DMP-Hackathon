@@ -46,96 +46,81 @@
       }
     ],
   "chatParticipants": [
-      {
-        "id": "chat-participant.hackathon",
-        "name": "hackchat",
-        "fullName": "HackChat",
-        "description": "Hi! I'm HackChat!",
-        "isSticky": true,
-        "commands": [
-          {
-            "name": "testCommand",
-            "description": "Test command!"
-          },
-          {
-            "name": "scanForDefects",
-            "description": "Scan Code for Defects"
-          },
-          {
-            "name": "createJiraTicket",
-            "description": "Create a Jira Ticket for Defect"
-          },
-          {
-            "name": "runTestCoverageAnalysis",
-            "description": "Run Test Coverage Analysis"
-          },
-          {
-            "name": "viewOutstandingTickets",
-            "description": "View Outstanding Tickets"
-          },
-          {
-            "name": "lintChecks",
-            "description": "Conduct a Lint Check"
-          },
-          {
-            "name": "codeExplanation",
-            "description": "Explain this code"
-          },
-          {
-            "name": "generateUnitTests",
-            "description": "Generate unit tests"
-          }
-        ]
-      }
-    ],
-    "chatParticipants": [
-      {
-        "id": "chat-participant.hackathon",
-        "name": "hackchat",
-        "fullName": "HackChat",
-        "description": "Hi! I'm HackChat!",
-        "isSticky": true,
-        "commands": [
-          {
-            "name": "testCommand",
-            "description": "Test command!"
-          }
-        ]
-      }
-    ],
-    "menus": {
-      "editor/context": [
+    {
+      "id": "chat-participant.hackathon",
+      "name": "hackchat",
+      "fullName": "HackChat",
+      "description": "Hi! I'm HackChat!",
+      "isSticky": true,
+      "commands": [
         {
-          "command": "hackathon.scanForDefects",
-          "when": "editorTextFocus"
+          "name": "testCommand",
+          "description": "Test command!"
         },
         {
-          "command": "hackathon.createJiraTicket",
-          "when": "editorTextFocus"
+          "name": "scanForDefects",
+          "description": "Scan Code for Defects"
         },
         {
-          "command": "hackathon.runTestCoverageAnalysis",
-          "when": "editorTextFocus"
+          "name": "createJiraTicket",
+          "description": "Create a Jira Ticket for Defect"
         },
         {
-          "command": "hackathon.viewOutstandingTickets",
-          "when": "editorTextFocus"
+          "name": "runTestCoverageAnalysis",
+          "description": "Run Test Coverage Analysis"
         },
         {
-          "command": "hackathon.lintChecks",
-          "when": "editorTextFocus"
+          "name": "viewOutstandingTickets",
+          "description": "View Outstanding Tickets"
         },
         {
-          "command": "hackathon.codeExplanation",
-          "when": "editorTextFocus"
+          "name": "lintChecks",
+          "description": "Conduct a Lint Check"
         },
         {
-          "command": "hackathon.generateUnitTests",
-          "when": "editorTextFocus"
+          "name": "codeExplanation",
+          "description": "Explain this code"
+        },
+        {
+          "name": "generateUnitTests",
+          "description": "Generate unit tests"
         }
       ]
     }
-  },
+  ],
+  "menus": {
+    "editor/context": [
+      {
+        "command": "hackathon.scanForDefects",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "hackathon.createJiraTicket",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "hackathon.runTestCoverageAnalysis",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "hackathon.viewOutstandingTickets",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "hackathon.lintChecks",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "hackathon.codeExplanation",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "hackathon.generateUnitTests",
+        "when": "editorTextFocus"
+      }
+    ]
+  }
+},
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
@@ -161,6 +146,6 @@
     "@langchain/langgraph": "^0.2.10",
     "@langchain/openai": "^0.3.4",
     "dotenv": "^16.4.5",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^2.7.0"
   }
 }

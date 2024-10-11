@@ -3,6 +3,13 @@ import * as vscode from 'vscode';
 import createJiraTicket from './test/create_ticket'; 
 import { fetchAssignedIssues } from './test/fetch_issues';
 import { fetchUsers } from './test/fetch_users'; 
+import { analyzeCodeQuality, handleChatPrompt } from './agent';
+
+interface HackChatResult extends vscode.ChatResult {
+    metadata: {
+        command: string;
+    }
+}
 
 // This method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -96,6 +103,88 @@ export function activate(context: vscode.ExtensionContext) {
         // TODO: Call the function to generate unit tests
     });
 
+    const chatHandler: vscode.ChatRequestHandler = async (
+		request: vscode.ChatRequest,
+		context: vscode.ChatContext,
+		stream: vscode.ChatResponseStream,
+		token: vscode.CancellationToken
+	  ): Promise<HackChatResult> => {
+		// Chat request handler implementation goes here
+		// Test for the `test` command
+		if (request.command === 'testCommand') {
+			// Add logic here to handle the test scenario
+			stream.progress('You\'re using my test command!');
+			// Render a button to trigger a VS Code command
+			stream.button({
+				command: 'hackathon.helloWorld',
+				title: vscode.l10n.t('Run test command')
+  			});
+			stream.progress(await handleChatPrompt(request.prompt));
+            return { metadata: { command: request.command } };
+		  } 
+		else if (request.command === 'scanForDefects') {
+            const document = vscode.window.activeTextEditor?.document;
+            if (document !== undefined) {
+                const uri = document.uri;
+                let diagnostics = vscode.languages.getDiagnostics(uri);
+                const code = document.getText();
+                console.log(JSON.stringify(diagnostics));
+                stream.progress(await analyzeCodeQuality(JSON.stringify(diagnostics), code));
+            }
+            return { metadata: { command: request.command } };
+		}
+		else if (request.command === 'createJiraTicket') {
+		}
+		else if (request.command === 'runTestCoverageAnalysis') {
+		}
+		else if (request.command === 'viewOutstandingTickets') {
+		}
+		else if (request.command === 'lintChecks') {
+		}
+		else if (request.command === 'codeExplanation') {
+		}
+		else if (request.command === 'generateUnitTests') {
+		}
+		else {
+		    stream.progress(await handleChatPrompt(request.prompt));
+            return { metadata: { command: '' }};
+		  }
+          return { metadata: { command: '' }};
+        };
+
+    // Register the chat participant and its request handler
+	const hackChat = vscode.chat.createChatParticipant('chat-participant.hackathon', chatHandler);	
+
+    // Register a follow-up provider
+	hackChat.followupProvider = {
+		provideFollowups(result: HackChatResult, context: vscode.ChatContext, token: vscode.CancellationToken) {
+			if (result.metadata.command === 'testCommand') {
+				return [{
+					prompt: 'Do you want to use a followup?',
+					label: vscode.l10n.t('Followup Test Example')
+				} satisfies vscode.ChatFollowup];
+			}
+			else if (result.metadata.command === 'scanForDefects') {
+                return [{
+					prompt: 'Just testing this out!',
+					label: vscode.l10n.t('Would you like to create a Jira ticket for these improvements?')
+				} satisfies vscode.ChatFollowup];
+			}
+			else if (result.metadata.command === 'createJiraTicket') {
+			}
+			else if (result.metadata.command === 'runTestCoverageAnalysis') {
+			}
+			else if (result.metadata.command === 'viewOutstandingTickets') {
+			}
+			else if (result.metadata.command === 'lintChecks') {
+			}
+			else if (result.metadata.command === 'codeExplanation') {
+			}
+			else if (result.metadata.command === 'generateUnitTests') {
+			}
+		}
+	};
+
     // Add all disposables to context subscriptions
     context.subscriptions.push(
         helloWorldDisposable,
@@ -105,7 +194,8 @@ export function activate(context: vscode.ExtensionContext) {
         viewOutstandingTicketsDisposable,
         lintChecksDisposable,
         codeExplanationDisposable,
-        generateUnitTestsDisposable
+        generateUnitTestsDisposable,
+        hackChat
     );
 }
 
