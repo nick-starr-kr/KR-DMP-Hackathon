@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import createJiraTicket from './test/create_ticket'; 
 import { fetchAssignedIssues } from './test/fetch_issues';
 import { fetchUsers } from './test/fetch_users'; 
-import { analyzeCodeQuality, handleChatPrompt } from './agent';
+import { analyzeCodeQuality, explainCode, handleChatPrompt } from './agent';
 
 interface HackChatResult extends vscode.ChatResult {
     metadata: {
@@ -134,6 +134,11 @@ export function activate(context: vscode.ExtensionContext) {
             return { metadata: { command: request.command } };
 		}
 		else if (request.command === 'createJiraTicket') {
+            // Prompt for different parts of the Jira ticket
+            // What is the name of the function
+            // What is the description of the function
+            // Recommended changes
+            // List of acceptance criteria
 		}
 		else if (request.command === 'runTestCoverageAnalysis') {
 		}
@@ -142,6 +147,16 @@ export function activate(context: vscode.ExtensionContext) {
 		else if (request.command === 'lintChecks') {
 		}
 		else if (request.command === 'codeExplanation') {
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const selection = editor.selection;
+                const selectedText = editor.document.getText(selection);
+                vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+                const text = await explainCode(selectedText);
+                stream.markdown(text);
+            } else {
+                vscode.window.showInformationMessage('No active editor found');
+            }
 		}
 		else if (request.command === 'generateUnitTests') {
 		}

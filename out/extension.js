@@ -136,6 +136,11 @@ function activate(context) {
             return { metadata: { command: request.command } };
         }
         else if (request.command === 'createJiraTicket') {
+            // Prompt for different parts of the Jira ticket
+            // What is the name of the function
+            // What is the description of the function
+            // Recommended changes
+            // List of acceptance criteria
         }
         else if (request.command === 'runTestCoverageAnalysis') {
         }
@@ -144,6 +149,17 @@ function activate(context) {
         else if (request.command === 'lintChecks') {
         }
         else if (request.command === 'codeExplanation') {
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const selection = editor.selection;
+                const selectedText = editor.document.getText(selection);
+                vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+                const text = await (0, agent_1.explainCode)(selectedText);
+                stream.markdown(text);
+            }
+            else {
+                vscode.window.showInformationMessage('No active editor found');
+            }
         }
         else if (request.command === 'generateUnitTests') {
         }
