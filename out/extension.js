@@ -111,6 +111,26 @@ function activate(context) {
         // TODO: Call the function to generate unit tests
     });
     const chatHandler = async (request, context, stream, token) => {
+        //get reference to the active text editor
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            stream.progress('No active editor');
+            return { metadata: { command: '' } };
+        }
+        const documentUri = editor.document.uri;
+        const selection = editor.selection;
+        const selectedText = editor.document.getText(selection);
+        if (!selectedText) {
+            stream.progress('No text selected');
+            return { metadata: { command: '' } };
+        }
+        const fileName = documentUri.path.split('/').pop(); // Extracts the file name from the full path
+        const lineNumber = selection.start.line + 1;
+        const referenceButton = `[${fileName}:${lineNumber}](command:vscode.open?${encodeURIComponent(JSON.stringify({
+            scheme: 'file',
+            path: documentUri.path,
+            fragment: `${lineNumber}`
+        }))} "Open ${fileName} at line ${lineNumber}")`;
         // Chat request handler implementation goes here
         // Test for the `test` command
         if (request.command === 'testCommand') {
@@ -126,6 +146,7 @@ function activate(context) {
         }
         else if (request.command === 'scanForDefects') {
             const document = vscode.window.activeTextEditor?.document;
+            stream.markdown("Referenced from: " + referenceButton + "\n\n");
             if (document !== undefined) {
                 const uri = document.uri;
                 let diagnostics = vscode.languages.getDiagnostics(uri);
