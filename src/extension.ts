@@ -126,14 +126,12 @@ export function activate(context: vscode.ExtensionContext) {
             return { metadata: { command: '' } };
         }
     
-        const fileName = documentUri.path.split('/').pop(); // Extracts the file name from the full path
-        const lineNumber = selection.start.line + 1;
-    
-        const referenceButton = `[${fileName}:${lineNumber}](command:vscode.open?${encodeURIComponent(JSON.stringify({
-            scheme: 'file',
-            path: documentUri.path,
-            fragment: `${lineNumber}`
-        }))} "Open ${fileName} at line ${lineNumber}")`;
+        // Get the file name and determine the line range based on the selection
+        const fileName = documentUri.path.split('/').pop();
+        const lineNumber = selection.start.line;
+        const fileRange = new vscode.Range(lineNumber, selection.start.line, selection.end.line, selection.end.character);
+
+       
         
 		// Chat request handler implementation goes here
 		// Test for the `test` command
@@ -150,10 +148,13 @@ export function activate(context: vscode.ExtensionContext) {
 		  } 
 		else if (request.command === 'scanForDefects') {
             const document = vscode.window.activeTextEditor?.document;
-            stream.markdown("Referenced from: " + referenceButton + "\n\n");
-
+            
             if (document !== undefined) {
                 const uri = document.uri;
+                 // Use stream.reference to add a clickable reference to the exact location
+                stream.reference(uri);
+                // Additionally, display a simple text or message
+                stream.progress(`Added reference for ${fileName}`);
                 let diagnostics = vscode.languages.getDiagnostics(uri);
                 const code = document.getText();
                 console.log(JSON.stringify(diagnostics));
@@ -176,6 +177,11 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		else if (request.command === 'codeExplanation') {
             const editor = vscode.window.activeTextEditor;
+             // Use stream.reference to add a clickable reference to the exact location
+            stream.reference(new vscode.Location(documentUri, fileRange));
+
+            // Additionally, display a simple text or message
+            stream.progress(`Added reference for ${fileName}:${lineNumber}`);
             if (editor) {
                 const selection = editor.selection;
                 const selectedText = editor.document.getText(selection);
