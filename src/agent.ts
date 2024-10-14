@@ -1,8 +1,7 @@
 // agent.ts
 
 // IMPORTANT - Add your API keys here. Be careful not to publish them.
-process.env.OPENAI_API_KEY = "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";
-process.env.TAVILY_API_KEY = "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";
+
 
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
 import { ChatOpenAI } from "@langchain/openai";
