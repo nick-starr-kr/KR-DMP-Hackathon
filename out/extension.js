@@ -136,6 +136,22 @@ function activate(context) {
             return { metadata: { command: request.command } };
         }
         else if (request.command === 'createJiraTicket') {
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const selection = editor.selection;
+                const selectedText = editor.document.getText(selection);
+                vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+                const text = await (0, agent_1.createTicket)(selectedText);
+                let name = text[0];
+                let description = text[1];
+                const title = await vscode.window.showInputBox({ prompt: 'Confirm title', value: "Defect in " + name });
+                const ticketDescription = await vscode.window.showInputBox({ prompt: 'Confirm description', value: description });
+                console.log(title);
+                console.log(ticketDescription);
+            }
+            else {
+                vscode.window.showInformationMessage('No active editor found');
+            }
             // Prompt for different parts of the Jira ticket
             // What is the name of the function
             // What is the description of the function

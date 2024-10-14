@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import createJiraTicket from './test/create_ticket'; 
 import { fetchAssignedIssues } from './test/fetch_issues';
 import { fetchUsers } from './test/fetch_users'; 
-import { analyzeCodeQuality, explainCode, handleChatPrompt } from './agent';
+import { analyzeCodeQuality, explainCode, createTicket, handleChatPrompt } from './agent';
 
 interface HackChatResult extends vscode.ChatResult {
     metadata: {
@@ -134,6 +134,23 @@ export function activate(context: vscode.ExtensionContext) {
             return { metadata: { command: request.command } };
 		}
 		else if (request.command === 'createJiraTicket') {
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const selection = editor.selection;
+                const selectedText = editor.document.getText(selection);
+                vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+                const text = await createTicket(selectedText);
+                let name = text[0];
+                let description = text[1];
+
+                const title = await vscode.window.showInputBox({ prompt: 'Confirm title', value: "Defect in " + name });
+                const ticketDescription = await vscode.window.showInputBox({ prompt: 'Confirm description', value: description});
+                
+                console.log(title);
+                console.log(ticketDescription);
+            } else {
+                vscode.window.showInformationMessage('No active editor found');
+            }
             // Prompt for different parts of the Jira ticket
             // What is the name of the function
             // What is the description of the function
