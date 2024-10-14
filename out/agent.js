@@ -3,7 +3,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleChatPrompt = handleChatPrompt;
 exports.analyzeCodeQuality = analyzeCodeQuality;
+exports.explainCode = explainCode;
 // IMPORTANT - Add your API keys here. Be careful not to publish them.
+process.env.OPENAI_API_KEY = "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";
 process.env.TAVILY_API_KEY = "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";
 const tavily_search_1 = require("@langchain/community/tools/tavily_search");
 const openai_1 = require("@langchain/openai");
@@ -28,6 +30,11 @@ async function analyzeCodeQuality(diagnostics, code) {
     const response = await agent.invoke({ messages: [new messages_1.SystemMessage("You are a digital programming assistant designed to help engineers improve the quality of their code."),
             new messages_1.SystemMessage("You will be provided a JSON array of diagnostic messages, followed by the source code that generated them. Analyze both the code and the dianogstics and summarize areas of improvement"),
             new messages_1.HumanMessage(diagnostics + "\n" + code)] }, { configurable: { thread_id: "42" } });
+    return response.messages[response.messages.length - 1].content;
+}
+async function explainCode(code) {
+    const response = await agent.invoke({ messages: [new messages_1.SystemMessage("You are a digital programming assistant designed to explain functionality of code."),
+            new messages_1.HumanMessage("Explain the code below:\n" + code)] }, { configurable: { thread_id: "42" } });
     return response.messages[response.messages.length - 1].content;
 }
 //# sourceMappingURL=agent.js.map
