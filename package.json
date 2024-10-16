@@ -17,7 +17,7 @@
         "title": "Hello World"
       },
       {
-        "command": "hackathon.scanForDefects",
+        "command": "hackathon.scanCodeForDefects",
         "title": "Scan Code for Defects"
       },
       {
@@ -91,7 +91,7 @@
   "menus": {
     "editor/context": [
       {
-        "command": "hackathon.scanForDefects",
+        "command": "hackathon.scanCodeForDefects",
         "when": "editorTextFocus"
       },
       {
