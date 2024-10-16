@@ -37,10 +37,36 @@ export async function analyzeCodeQuality(diagnostics: string, code: string) {
 
 }
 
-  export async function explainCode(code: string) {
+export async function explainCode(code: string) {
     const response = await agent.invoke(
       { messages: [new SystemMessage("You are a digital programming assistant designed to explain functionality of code."),
         new HumanMessage("Explain the code below:\n" + code)] },
       { configurable: { thread_id: "42" } });
       return response.messages[response.messages.length - 1].content;
   }
+
+export async function generateUnitTests(code: string) {
+    const response = await agent.invoke(
+      { messages: [new SystemMessage("You are a digital programming assistant designed to generate valuable unit tests for their code."),
+        new HumanMessage("Generate unit tests to cover the below code:\n" + code)] },
+      { configurable: { thread_id: "42" } });
+      return response.messages[response.messages.length - 1].content;
+  }
+
+export async function handleGenericChatPrompt(prompt: string, code?: string, diagnostics?: string, filename?: string) {
+  let messages = [new SystemMessage("You are a digital programming assistant designed to assist software development.")];
+  if (code !== undefined) {
+    messages.push(new SystemMessage("This is the source code the user has opened in their editor: " + code));
+  }
+  if (diagnostics !== undefined) {
+    messages.push(new SystemMessage("This is a JSON array of diagnostic messages related to the source code the user has opened in their editor: " + diagnostics));
+  }
+  if (filename !== undefined) {
+    messages.push(new SystemMessage("This is the name of the source code file the user has opened in their editor: " + filename));
+  }
+  messages.push(new HumanMessage(prompt));
+  const response = await agent.invoke(
+        { messages: messages },
+        { configurable: { thread_id: "42" } });
+  return response.messages[response.messages.length - 1].content;
+}

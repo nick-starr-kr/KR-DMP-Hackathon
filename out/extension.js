@@ -42,9 +42,17 @@ function activate(context) {
         vscode.window.showInformationMessage('Hello World from Hackathon!');
     });
     // Scan Code for Defects Command
-    let scanCodeForDefectsDisposable = vscode.commands.registerCommand('hackathon.scanCodeForDefects', () => {
+    let scanCodeForDefectsDisposable = vscode.commands.registerCommand('hackathon.scanCodeForDefects', async () => {
         vscode.window.showInformationMessage('Scanning code for defects...');
-        // TODO: Call linting function here
+        const document = vscode.window.activeTextEditor?.document;
+        if (document !== undefined) {
+            const uri = document.uri;
+            let diagnostics = vscode.languages.getDiagnostics(uri);
+            const code = document.getText();
+            console.log(JSON.stringify(diagnostics));
+            let result = await (0, agent_1.analyzeCodeQuality)(JSON.stringify(diagnostics), code);
+            vscode.window.showInformationMessage(result);
+        }
     });
     // Create JIRA Ticket Command
     let createJiraTicketDisposable = vscode.commands.registerCommand('hackathon.createJiraTicket', create_ticket_1.default);
@@ -101,14 +109,34 @@ function activate(context) {
         // TODO: Call the function to conduct a lint check
     });
     // Explain Code Command
-    let codeExplanationDisposable = vscode.commands.registerCommand('hackathon.codeExplanation', () => {
+    let codeExplanationDisposable = vscode.commands.registerCommand('hackathon.codeExplanation', async () => {
         vscode.window.showInformationMessage('Collecting explanation for the code...');
-        // TODO: Call the function to explain a given code
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const selection = editor.selection;
+            const selectedText = editor.document.getText(selection);
+            vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+            const text = await (0, agent_1.explainCode)(selectedText);
+            vscode.window.showInformationMessage(text);
+        }
+        else {
+            vscode.window.showInformationMessage('No active editor found');
+        }
     });
     // Generate Unit Tests Command
-    let generateUnitTestsDisposable = vscode.commands.registerCommand('hackathon.generateUnitTests', () => {
+    let generateUnitTestsDisposable = vscode.commands.registerCommand('hackathon.generateUnitTests', async () => {
         vscode.window.showInformationMessage('Generating unit tests...');
-        // TODO: Call the function to generate unit tests
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const selection = editor.selection;
+            const selectedText = editor.document.getText(selection);
+            vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+            const text = await (0, agent_1.generateUnitTests)(selectedText);
+            vscode.window.showInformationMessage(text);
+        }
+        else {
+            vscode.window.showInformationMessage('No active editor found');
+        }
     });
     const chatHandler = async (request, context, stream, token) => {
         // Chat request handler implementation goes here
@@ -131,7 +159,7 @@ function activate(context) {
                 let diagnostics = vscode.languages.getDiagnostics(uri);
                 const code = document.getText();
                 console.log(JSON.stringify(diagnostics));
-                stream.progress(await (0, agent_1.analyzeCodeQuality)(JSON.stringify(diagnostics), code));
+                stream.markdown(await (0, agent_1.analyzeCodeQuality)(JSON.stringify(diagnostics), code));
             }
             return { metadata: { command: request.command } };
         }
@@ -162,9 +190,30 @@ function activate(context) {
             }
         }
         else if (request.command === 'generateUnitTests') {
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const selection = editor.selection;
+                const selectedText = editor.document.getText(selection);
+                vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+                const text = await (0, agent_1.generateUnitTests)(selectedText);
+                stream.markdown(text);
+            }
+            else {
+                vscode.window.showInformationMessage('No active editor found');
+            }
         }
         else {
-            stream.progress(await (0, agent_1.handleChatPrompt)(request.prompt));
+            let code = '';
+            let diagnostics = '';
+            let filename = '';
+            const document = vscode.window.activeTextEditor?.document;
+            if (document !== undefined) {
+                filename = document.fileName;
+                const uri = document.uri;
+                diagnostics = JSON.stringify(vscode.languages.getDiagnostics(uri));
+                code = document.getText();
+            }
+            stream.markdown(await (0, agent_1.handleGenericChatPrompt)(request.prompt, code, diagnostics, filename));
             return { metadata: { command: '' } };
         }
         return { metadata: { command: '' } };
@@ -181,10 +230,6 @@ function activate(context) {
                     }];
             }
             else if (result.metadata.command === 'scanForDefects') {
-                return [{
-                        prompt: 'Just testing this out!',
-                        label: vscode.l10n.t('Would you like to create a Jira ticket for these improvements?')
-                    }];
             }
             else if (result.metadata.command === 'createJiraTicket') {
             }
