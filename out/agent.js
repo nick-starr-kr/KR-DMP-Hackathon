@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleChatPrompt = handleChatPrompt;
 exports.analyzeCodeQuality = analyzeCodeQuality;
 exports.explainCode = explainCode;
-// IMPORTANT - Add your API keys here. Be careful not to publish them.
-
 const tavily_search_1 = require("@langchain/community/tools/tavily_search");
 const openai_1 = require("@langchain/openai");
 const langgraph_1 = require("@langchain/langgraph");
