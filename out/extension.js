@@ -111,6 +111,23 @@ function activate(context) {
         // TODO: Call the function to generate unit tests
     });
     const chatHandler = async (request, context, stream, token) => {
+        //get reference to the active text editor
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            stream.progress('No active editor');
+            return { metadata: { command: '' } };
+        }
+        const documentUri = editor.document.uri;
+        const selection = editor.selection;
+        const selectedText = editor.document.getText(selection);
+        if (!selectedText) {
+            stream.progress('No text selected');
+            return { metadata: { command: '' } };
+        }
+        // Get the file name and determine the line range based on the selection
+        const fileName = documentUri.path.split('/').pop();
+        const lineNumber = selection.start.line;
+        const fileRange = new vscode.Range(lineNumber, selection.start.line, selection.end.line, selection.end.character);
         // Chat request handler implementation goes here
         // Test for the `test` command
         if (request.command === 'testCommand') {
@@ -128,6 +145,10 @@ function activate(context) {
             const document = vscode.window.activeTextEditor?.document;
             if (document !== undefined) {
                 const uri = document.uri;
+                // Use stream.reference to add a clickable reference to the exact location
+                stream.reference(uri);
+                // Additionally, display a simple text or message
+                stream.progress(`Added reference for ${fileName}`);
                 let diagnostics = vscode.languages.getDiagnostics(uri);
                 const code = document.getText();
                 console.log(JSON.stringify(diagnostics));
@@ -150,6 +171,10 @@ function activate(context) {
         }
         else if (request.command === 'codeExplanation') {
             const editor = vscode.window.activeTextEditor;
+            // Use stream.reference to add a clickable reference to the exact location
+            stream.reference(new vscode.Location(documentUri, fileRange));
+            // Additionally, display a simple text or message
+            stream.progress(`Added reference for ${fileName}:${lineNumber}`);
             if (editor) {
                 const selection = editor.selection;
                 const selectedText = editor.document.getText(selection);
