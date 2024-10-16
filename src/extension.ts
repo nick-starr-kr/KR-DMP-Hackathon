@@ -123,7 +123,6 @@ export function activate(context: vscode.ExtensionContext) {
         
         if (!selectedText) {
             stream.progress('No text selected');
-            return { metadata: { command: '' } };
         }
     
         // Get the file name and determine the line range based on the selection
@@ -170,7 +169,36 @@ export function activate(context: vscode.ExtensionContext) {
             // List of acceptance criteria
 		}
 		else if (request.command === 'runTestCoverageAnalysis') {
+            vscode.window.showInformationMessage('Running test coverage analysis...');
+            // Locate the lcov.info file
+            const lcovFiles = await vscode.workspace.findFiles('**/coverage/lcov.info', '**/node_modules/**', 1);
+            let fileUri;
+    
+            if (lcovFiles.length > 0) {
+                fileUri = lcovFiles[0];
+            } else {
+                fileUri = await vscode.window.showOpenDialog({
+                    canSelectFiles: true,
+                    canSelectFolders: false,
+                    filters: { 'LCOV Files': ['info'] },
+                    openLabel: 'Select lcov.info file'
+                }).then(fileUris => fileUris ? fileUris[0] : undefined);
+            }
+    
+            if (!fileUri) {
+                vscode.window.showErrorMessage('No lcov.info file selected or found.');
+                return { metadata: { command: request.command } };
+            }
+    
+            // Read the file contents
+            const fileData = await vscode.workspace.fs.readFile(fileUri);
+            const lcovContent = Buffer.from(fileData).toString('utf8');
+            console.log(lcovContent);
+            //pass in lcovContent of lcov.info file into agent here
+           
+            return { metadata: { command: request.command } };
 		}
+
 		else if (request.command === 'viewOutstandingTickets') {
 		}
 		else if (request.command === 'lintChecks') {
