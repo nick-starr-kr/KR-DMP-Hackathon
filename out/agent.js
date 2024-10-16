@@ -5,6 +5,7 @@ exports.handleChatPrompt = handleChatPrompt;
 exports.analyzeCodeQuality = analyzeCodeQuality;
 exports.explainCode = explainCode;
 exports.createTicket = createTicket;
+exports.confirmJiraTicket = confirmJiraTicket;
 const tavily_search_1 = require("@langchain/community/tools/tavily_search");
 const openai_1 = require("@langchain/openai");
 const langgraph_1 = require("@langchain/langgraph");
@@ -52,5 +53,9 @@ async function createTicket(code) {
             new messages_1.HumanMessage("Convert these strings into a cohesive paragraph: \n" + description + " " + defect + " " + fix)] }, { configurable: { thread_id: "42" } });
     const output = response5.messages[response5.messages.length - 1].content;
     return [name, output];
+}
+async function confirmJiraTicket(prompt) {
+    console.log(prompt);
+    return "Done";
 }
 //# sourceMappingURL=agent.js.map

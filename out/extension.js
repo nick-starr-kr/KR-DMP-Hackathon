@@ -22,18 +22,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
 // The module 'vscode' contains the VS Code extensibility API
 const vscode = __importStar(require("vscode"));
-const create_ticket_1 = __importDefault(require("./test/create_ticket"));
+const create_ticket_1 = require("./test/create_ticket");
 const fetch_issues_1 = require("./test/fetch_issues");
 const fetch_users_1 = require("./test/fetch_users");
 const agent_1 = require("./agent");
+const DEFAULT_REPORTER = { id: '' };
+const DEFAULT_ASSIGNEE = { id: '' };
+const DEFAULT_TYPE = "Task";
 // This method is called when your extension is activated
 function activate(context) {
     console.log('Congratulations, your extension "hackathon" is now active!');
@@ -47,7 +47,7 @@ function activate(context) {
         // TODO: Call linting function here
     });
     // Create JIRA Ticket Command
-    let createJiraTicketDisposable = vscode.commands.registerCommand('hackathon.createJiraTicket', create_ticket_1.default);
+    let createJiraTicketDisposable = vscode.commands.registerCommand('hackathon.createJiraTicket', create_ticket_1.createJiraTicket);
     // Run Test Coverage Analysis Command
     let runTestCoverageAnalysisDisposable = vscode.commands.registerCommand('hackathon.runTestCoverageAnalysis', () => {
         vscode.window.showInformationMessage('Running test coverage analysis...');
@@ -146,8 +146,9 @@ function activate(context) {
                 let description = text[1];
                 const title = await vscode.window.showInputBox({ prompt: 'Confirm title', value: "Defect in " + name });
                 const ticketDescription = await vscode.window.showInputBox({ prompt: 'Confirm description', value: description });
-                console.log(title);
-                console.log(ticketDescription);
+                if (title && ticketDescription) {
+                    (0, create_ticket_1.createJiraTicketLLM)(title, ticketDescription, DEFAULT_ASSIGNEE, DEFAULT_REPORTER, DEFAULT_TYPE);
+                }
             }
             else {
                 vscode.window.showInformationMessage('No active editor found');

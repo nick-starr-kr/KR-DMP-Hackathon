@@ -76,3 +76,8 @@ export async function analyzeCodeQuality(diagnostics: string, code: string) {
     const output = response5.messages[response5.messages.length - 1].content;
     return [name, output];
   }
+
+  export async function confirmJiraTicket(prompt: string) {
+    console.log(prompt);
+    return "Done";
+}
