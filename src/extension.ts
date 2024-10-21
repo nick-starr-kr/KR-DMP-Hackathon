@@ -3,7 +3,8 @@ import * as vscode from 'vscode';
 import createJiraTicket from './test/create_ticket'; 
 import { fetchAssignedIssues } from './test/fetch_issues';
 import { fetchUsers } from './test/fetch_users'; 
-import { analyzeCodeQuality, explainCode, generateUnitTests, handleChatPrompt, handleGenericChatPrompt } from './agent';
+import { analyzeCodeQuality, analyzeTestCoverage, explainCode, generateUnitTests, handleChatPrompt, handleGenericChatPrompt } from './agent';
+import parseLCOV from 'parse-lcov';
 
 interface HackChatResult extends vscode.ChatResult {
     metadata: {
@@ -91,12 +92,6 @@ export function activate(context: vscode.ExtensionContext) {
     } else {
         vscode.window.showWarningMessage('No user selected.');
     }
-    });
-
-    // Lint Checks Command
-    let lintChecksDisposable = vscode.commands.registerCommand('hackathon.lintChecks', () => {
-        vscode.window.showInformationMessage('Running a lint check...');
-        // TODO: Call the function to conduct a lint check
     });
 
     // Explain Code Command
@@ -198,7 +193,7 @@ export function activate(context: vscode.ExtensionContext) {
 		else if (request.command === 'runTestCoverageAnalysis') {
             vscode.window.showInformationMessage('Running test coverage analysis...');
             // Locate the lcov.info file
-            const lcovFiles = await vscode.workspace.findFiles('**/coverage/lcov.info', '**/node_modules/**', 1);
+            const lcovFiles = await vscode.workspace.findFiles('**/lcov.info', '**/node_modules/**', 1);
             let fileUri;
     
             if (lcovFiles.length > 0) {
@@ -221,14 +216,23 @@ export function activate(context: vscode.ExtensionContext) {
             const fileData = await vscode.workspace.fs.readFile(fileUri);
             const lcovContent = Buffer.from(fileData).toString('utf8');
             console.log(lcovContent);
-            //pass in lcovContent of lcov.info file into agent here
+
+            const lcovJSON = parseLCOV(lcovContent);
+            const document = vscode.window.activeTextEditor?.document;
+            
+            if (document !== undefined) {
+                const uri = document.uri;
+                 // Use stream.reference to add a clickable reference to the exact location
+                stream.reference(uri);
+                // Additionally, display a simple text or message
+                stream.progress(`Added reference for ${fileName}`);
+                const code = document.getText();
+                stream.markdown(await analyzeTestCoverage(lcovContent, code));
+            }            
            
             return { metadata: { command: request.command } };
 		}
-
 		else if (request.command === 'viewOutstandingTickets') {
-		}
-		else if (request.command === 'lintChecks') {
 		}
 		else if (request.command === 'codeExplanation') {
             const editor = vscode.window.activeTextEditor;
@@ -296,8 +300,6 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 			else if (result.metadata.command === 'viewOutstandingTickets') {
 			}
-			else if (result.metadata.command === 'lintChecks') {
-			}
 			else if (result.metadata.command === 'codeExplanation') {
 			}
 			else if (result.metadata.command === 'generateUnitTests') {
@@ -312,7 +314,6 @@ export function activate(context: vscode.ExtensionContext) {
         createJiraTicketDisposable,
         runTestCoverageAnalysisDisposable,
         viewOutstandingTicketsDisposable,
-        lintChecksDisposable,
         codeExplanationDisposable,
         generateUnitTestsDisposable,
         hackChat

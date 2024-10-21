@@ -34,6 +34,7 @@ const create_ticket_1 = __importDefault(require("./test/create_ticket"));
 const fetch_issues_1 = require("./test/fetch_issues");
 const fetch_users_1 = require("./test/fetch_users");
 const agent_1 = require("./agent");
+const parse_lcov_1 = __importDefault(require("parse-lcov"));
 // This method is called when your extension is activated
 function activate(context) {
     console.log('Congratulations, your extension "hackathon" is now active!');
@@ -102,11 +103,6 @@ function activate(context) {
         else {
             vscode.window.showWarningMessage('No user selected.');
         }
-    });
-    // Lint Checks Command
-    let lintChecksDisposable = vscode.commands.registerCommand('hackathon.lintChecks', () => {
-        vscode.window.showInformationMessage('Running a lint check...');
-        // TODO: Call the function to conduct a lint check
     });
     // Explain Code Command
     let codeExplanationDisposable = vscode.commands.registerCommand('hackathon.codeExplanation', async () => {
@@ -193,7 +189,7 @@ function activate(context) {
         else if (request.command === 'runTestCoverageAnalysis') {
             vscode.window.showInformationMessage('Running test coverage analysis...');
             // Locate the lcov.info file
-            const lcovFiles = await vscode.workspace.findFiles('**/coverage/lcov.info', '**/node_modules/**', 1);
+            const lcovFiles = await vscode.workspace.findFiles('**/lcov.info', '**/node_modules/**', 1);
             let fileUri;
             if (lcovFiles.length > 0) {
                 fileUri = lcovFiles[0];
@@ -214,12 +210,20 @@ function activate(context) {
             const fileData = await vscode.workspace.fs.readFile(fileUri);
             const lcovContent = Buffer.from(fileData).toString('utf8');
             console.log(lcovContent);
-            //pass in lcovContent of lcov.info file into agent here
+            const lcovJSON = (0, parse_lcov_1.default)(lcovContent);
+            const document = vscode.window.activeTextEditor?.document;
+            if (document !== undefined) {
+                const uri = document.uri;
+                // Use stream.reference to add a clickable reference to the exact location
+                stream.reference(uri);
+                // Additionally, display a simple text or message
+                stream.progress(`Added reference for ${fileName}`);
+                const code = document.getText();
+                stream.markdown(await (0, agent_1.analyzeTestCoverage)(lcovContent, code));
+            }
             return { metadata: { command: request.command } };
         }
         else if (request.command === 'viewOutstandingTickets') {
-        }
-        else if (request.command === 'lintChecks') {
         }
         else if (request.command === 'codeExplanation') {
             const editor = vscode.window.activeTextEditor;
@@ -286,8 +290,6 @@ function activate(context) {
             }
             else if (result.metadata.command === 'viewOutstandingTickets') {
             }
-            else if (result.metadata.command === 'lintChecks') {
-            }
             else if (result.metadata.command === 'codeExplanation') {
             }
             else if (result.metadata.command === 'generateUnitTests') {
@@ -295,7 +297,7 @@ function activate(context) {
         }
     };
     // Add all disposables to context subscriptions
-    context.subscriptions.push(helloWorldDisposable, scanCodeForDefectsDisposable, createJiraTicketDisposable, runTestCoverageAnalysisDisposable, viewOutstandingTicketsDisposable, lintChecksDisposable, codeExplanationDisposable, generateUnitTestsDisposable, hackChat);
+    context.subscriptions.push(helloWorldDisposable, scanCodeForDefectsDisposable, createJiraTicketDisposable, runTestCoverageAnalysisDisposable, viewOutstandingTicketsDisposable, codeExplanationDisposable, generateUnitTestsDisposable, hackChat);
 }
 // This method is called when your extension is deactivated
 function deactivate() { }

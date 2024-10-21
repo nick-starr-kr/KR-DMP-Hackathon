@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleChatPrompt = handleChatPrompt;
 exports.analyzeCodeQuality = analyzeCodeQuality;
+exports.analyzeTestCoverage = analyzeTestCoverage;
 exports.explainCode = explainCode;
 exports.generateUnitTests = generateUnitTests;
 exports.handleGenericChatPrompt = handleGenericChatPrompt;
@@ -29,6 +30,12 @@ async function analyzeCodeQuality(diagnostics, code) {
     const response = await agent.invoke({ messages: [new messages_1.SystemMessage("You are a digital programming assistant designed to help engineers improve the quality of their code."),
             new messages_1.SystemMessage("You will be provided a JSON array of diagnostic messages, followed by the source code that generated them. Analyze both the code and the dianogstics and summarize areas of improvement"),
             new messages_1.HumanMessage(diagnostics + "\n" + code)] }, { configurable: { thread_id: "42" } });
+    return response.messages[response.messages.length - 1].content;
+}
+async function analyzeTestCoverage(lcov, code) {
+    const response = await agent.invoke({ messages: [new messages_1.SystemMessage("You are a digital programming assistant designed to help engineers improve the quality of their code."),
+            new messages_1.SystemMessage("You will be provided an lcov file for this project, followed by source code provided by the user. Analyze both the code and the coverage data and identify gaps in test coverage."),
+            new messages_1.HumanMessage(lcov + "\n" + code)] }, { configurable: { thread_id: "42" } });
     return response.messages[response.messages.length - 1].content;
 }
 async function explainCode(code) {

@@ -36,6 +36,14 @@ export async function analyzeCodeQuality(diagnostics: string, code: string) {
     return response.messages[response.messages.length - 1].content;
 
 }
+export async function analyzeTestCoverage(lcov: string, code: string) {
+  const response = await agent.invoke(
+    { messages: [new SystemMessage("You are a digital programming assistant designed to help engineers improve the quality of their code."),
+      new SystemMessage("You will be provided an lcov file for this project, followed by source code provided by the user. Analyze both the code and the coverage data and identify gaps in test coverage."),
+      new HumanMessage(lcov + "\n" + code)] },
+    { configurable: { thread_id: "42" } });
+    return response.messages[response.messages.length - 1].content;
+}
 
 export async function explainCode(code: string) {
     const response = await agent.invoke(
