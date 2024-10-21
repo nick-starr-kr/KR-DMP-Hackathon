@@ -110,19 +110,27 @@ function activate(context) {
         vscode.window.showInformationMessage('Generating unit tests...');
         // TODO: Call the function to generate unit tests
     });
-    const chatHandler = async (request, context, stream, token) => {
+    const chatHandler = async (request, chatContext, stream, token) => {
         // Chat request handler implementation goes here
         // Test for the `test` command
+        // Using workspace name to store unique conversation history per workspace
+        const workspaceName = vscode.workspace.name || 'defaultWorkspace';
+        const conversationKey = `chatHistory_${workspaceName}`;
+        // Retrieve conversation history for the current user from workspaceState or globalState
+        const previousConversation = context.workspaceState.get(conversationKey) || [];
+        // Show the previous conversation (if any)
+        // if (previousConversation.length > 0) {
+        //     stream.markdown(`**Previous Conversations:**\n${previousConversation.join('\n')}`);
+        // }
+        let botResponse = '';
         if (request.command === 'testCommand') {
-            // Add logic here to handle the test scenario
             stream.progress('You\'re using my test command!');
-            // Render a button to trigger a VS Code command
             stream.button({
                 command: 'hackathon.helloWorld',
                 title: vscode.l10n.t('Run test command')
             });
-            stream.progress(await (0, agent_1.handleChatPrompt)(request.prompt));
-            return { metadata: { command: request.command } };
+            botResponse = await (0, agent_1.handleChatPrompt)(request.prompt);
+            stream.progress(botResponse);
         }
         else if (request.command === 'scanForDefects') {
             const document = vscode.window.activeTextEditor?.document;
@@ -164,9 +172,14 @@ function activate(context) {
         else if (request.command === 'generateUnitTests') {
         }
         else {
-            stream.progress(await (0, agent_1.handleChatPrompt)(request.prompt));
-            return { metadata: { command: '' } };
+            botResponse = await (0, agent_1.handleChatPrompt)(request.prompt);
+            stream.progress(botResponse);
         }
+        // Append the new chat input and response to the conversation history
+        previousConversation.push(`User: ${request.prompt}`);
+        previousConversation.push(`Bot: ${botResponse}`);
+        // Save the updated conversation history
+        context.workspaceState.update(conversationKey, previousConversation);
         return { metadata: { command: '' } };
     };
     // Register the chat participant and its request handler

@@ -105,23 +105,35 @@ export function activate(context: vscode.ExtensionContext) {
 
     const chatHandler: vscode.ChatRequestHandler = async (
 		request: vscode.ChatRequest,
-		context: vscode.ChatContext,
+		chatContext: vscode.ChatContext,
 		stream: vscode.ChatResponseStream,
 		token: vscode.CancellationToken
 	  ): Promise<HackChatResult> => {
 		// Chat request handler implementation goes here
 		// Test for the `test` command
+        // Using workspace name to store unique conversation history per workspace
+        const workspaceName = vscode.workspace.name || 'defaultWorkspace';
+        const conversationKey = `chatHistory_${workspaceName}`;
+
+        // Retrieve conversation history for the current user from workspaceState or globalState
+        const previousConversation = context.workspaceState.get<string[]>(conversationKey) || [];
+
+        // Show the previous conversation (if any)
+        // if (previousConversation.length > 0) {
+        //     stream.markdown(`**Previous Conversations:**\n${previousConversation.join('\n')}`);
+        // }
+
+        let botResponse: string = '';
 		if (request.command === 'testCommand') {
-			// Add logic here to handle the test scenario
-			stream.progress('You\'re using my test command!');
-			// Render a button to trigger a VS Code command
-			stream.button({
-				command: 'hackathon.helloWorld',
-				title: vscode.l10n.t('Run test command')
-  			});
-			stream.progress(await handleChatPrompt(request.prompt));
-            return { metadata: { command: request.command } };
-		  } 
+            stream.progress('You\'re using my test command!');
+            stream.button({
+                command: 'hackathon.helloWorld',
+                title: vscode.l10n.t('Run test command')
+            });
+            botResponse = await handleChatPrompt(request.prompt);
+            stream.progress(botResponse);
+        }
+          
 		else if (request.command === 'scanForDefects') {
             const document = vscode.window.activeTextEditor?.document;
             if (document !== undefined) {
@@ -161,9 +173,16 @@ export function activate(context: vscode.ExtensionContext) {
 		else if (request.command === 'generateUnitTests') {
 		}
 		else {
-		    stream.progress(await handleChatPrompt(request.prompt));
-            return { metadata: { command: '' }};
-		  }
+            botResponse = await handleChatPrompt(request.prompt);
+            stream.progress(botResponse);
+        }
+        // Append the new chat input and response to the conversation history
+        previousConversation.push(`User: ${request.prompt}`);
+        previousConversation.push(`Bot: ${botResponse}`);
+
+        // Save the updated conversation history
+        context.workspaceState.update(conversationKey, previousConversation);
+
           return { metadata: { command: '' }};
         };
 
