@@ -28,7 +28,7 @@ const vscode = __importStar(require("vscode"));
 async function fetchUsers() {
     const jiraApiUrl = 'https://anushachitranshi.atlassian.net/rest/api/2/users';
     const email = process.env.ATLASSIAN_EMAIL || "anusha.chitranshi@gmail.com";
-    const apiToken = process.env.ATLASSIAN_API_TOKEN || "ATATT3xFfGF0zOik8FtVkmYdmER2JluIOm6sQKdvluIIBKXKTHFEEgHey9R2BJvqrPmHes1Xgr68VYGcWPY_IhcXQJVUreeramkVe6DL94Cskc0QxmFCm8aLcI2AHfJ-9pAMo3CT9eqnc0M7yoI9ZPTlQfvtmx2QL-Ms38aRd8Cz5BBLIKUvqG4";
+    const apiToken = process.env.ATLASSIAN_API_TOKEN;
     const fetch = await import('node-fetch').then(mod => mod.default);
     try {
         const response = await fetch(jiraApiUrl, {
