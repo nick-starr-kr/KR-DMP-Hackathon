@@ -1,9 +1,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
-import createJiraTicket from './test/create_ticket'; 
+import { createJiraTicket, createJiraTicketLLM } from './test/create_ticket'; 
 import { fetchAssignedIssues } from './test/fetch_issues';
 import { fetchUsers } from './test/fetch_users'; 
-import { analyzeCodeQuality, analyzeTestCoverage, explainCode, generateUnitTests, handleChatPrompt, handleGenericChatPrompt } from './agent';
+import { analyzeCodeQuality, analyzeTestCoverage, explainCode, createTicket, generateUnitTests, handleChatPrompt, handleGenericChatPrompt } from './agent';
 import parseLCOV from 'parse-lcov';
 
 interface HackChatResult extends vscode.ChatResult {
@@ -11,6 +11,10 @@ interface HackChatResult extends vscode.ChatResult {
         command: string;
     }
 }
+
+const DEFAULT_REPORTER = { id: '' };
+const DEFAULT_ASSIGNEE = { id: '' };
+const DEFAULT_TYPE = "Task";
 
 // This method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -127,7 +131,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     const chatHandler: vscode.ChatRequestHandler = async (
 		request: vscode.ChatRequest,
-		context: vscode.ChatContext,
+		chatContext: vscode.ChatContext,
 		stream: vscode.ChatResponseStream,
 		token: vscode.CancellationToken
 	  ): Promise<HackChatResult> => {
@@ -156,17 +160,29 @@ export function activate(context: vscode.ExtensionContext) {
         
 		// Chat request handler implementation goes here
 		// Test for the `test` command
+        // Using workspace name to store unique conversation history per workspace
+        const workspaceName = vscode.workspace.name || 'defaultWorkspace';
+        const conversationKey = `chatHistory_${workspaceName}`;
+
+        // Retrieve conversation history for the current user from workspaceState or globalState
+        const previousConversation = context.workspaceState.get<string[]>(conversationKey) || [];
+
+        // Show the previous conversation (if any)
+        // if (previousConversation.length > 0) {
+        //     stream.markdown(`**Previous Conversations:**\n${previousConversation.join('\n')}`);
+        // }
+
+        let botResponse: string = '';
 		if (request.command === 'testCommand') {
-			// Add logic here to handle the test scenario
-			stream.progress('You\'re using my test command!');
-			// Render a button to trigger a VS Code command
-			stream.button({
-				command: 'hackathon.helloWorld',
-				title: vscode.l10n.t('Run test command')
-  			});
-			stream.progress(await handleChatPrompt(request.prompt));
-            return { metadata: { command: request.command } };
-		  } 
+            stream.progress('You\'re using my test command!');
+            stream.button({
+                command: 'hackathon.helloWorld',
+                title: vscode.l10n.t('Run test command')
+            });
+            botResponse = await handleChatPrompt(request.prompt);
+            stream.progress(botResponse);
+        }
+          
 		else if (request.command === 'scanForDefects') {
             const document = vscode.window.activeTextEditor?.document;
             
@@ -184,6 +200,24 @@ export function activate(context: vscode.ExtensionContext) {
             return { metadata: { command: request.command } };
 		}
 		else if (request.command === 'createJiraTicket') {
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const selection = editor.selection;
+                const selectedText = editor.document.getText(selection);
+                vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+                const text = await createTicket(selectedText);
+                let name = text[0];
+                let description = text[1];
+
+                const title = await vscode.window.showInputBox({ prompt: 'Confirm title', value: "Defect in " + name });
+                const ticketDescription = await vscode.window.showInputBox({ prompt: 'Confirm description', value: description});
+                
+                if (title && ticketDescription) {
+                    createJiraTicketLLM(title, ticketDescription, DEFAULT_ASSIGNEE, DEFAULT_REPORTER, DEFAULT_TYPE);
+                }
+            } else {
+                vscode.window.showInformationMessage('No active editor found');
+            }
             // Prompt for different parts of the Jira ticket
             // What is the name of the function
             // What is the description of the function
@@ -279,9 +313,17 @@ export function activate(context: vscode.ExtensionContext) {
                 diagnostics = JSON.stringify(vscode.languages.getDiagnostics(uri));
                 code = document.getText();
             }
-		    stream.markdown(await handleGenericChatPrompt(request.prompt,code,diagnostics,filename));
-            return { metadata: { command: '' }};
+		    botResponse = await handleGenericChatPrompt(request.prompt,code,diagnostics,filename);
+            stream.markdown(botResponse);
+
 		  }
+          // Append the new chat input and response to the conversation history
+        previousConversation.push(`User: ${request.prompt}`);
+        previousConversation.push(`Bot: ${botResponse}`);
+
+        // Save the updated conversation history
+        context.workspaceState.update(conversationKey, previousConversation);
+
           return { metadata: { command: '' }};
         };
 

@@ -23,7 +23,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = createJiraTicket;
+exports.createJiraTicketLLM = createJiraTicketLLM;
+exports.createJiraTicket = createJiraTicket;
 const vscode = __importStar(require("vscode"));
 const fetch = async () => (await import('node-fetch')).default;
 const jira_input_modal_1 = require("./jira_input_modal");
@@ -33,6 +34,51 @@ const email = process.env.ATLASSIAN_EMAIL || "anusha.chitranshi@gmail.com";
 const apiToken = process.env.ATLASSIAN_API_TOKEN;
 if (!email || !apiToken) {
     throw new Error("Missing JIRA credentials: Please set JIRA_EMAIL and JIRA_API_TOKEN in the .env file.");
+}
+async function createJiraTicketLLM(title, description, assignee, reporter, issueType) {
+    const jiraInputModal = new jira_input_modal_1.JiraInputModal();
+    const bodyData = JSON.stringify({
+        fields: {
+            project: {
+                key: 'SCRUM',
+            },
+            summary: title,
+            description: description,
+            issuetype: {
+                name: issueType,
+            },
+            assignee: {
+                id: assignee.id,
+            },
+            reporter: {
+                id: reporter.id,
+            }
+        }
+    });
+    const jiraApiUrl = "https://anushachitranshi.atlassian.net/rest/api/2/issue";
+    try {
+        const fetchFn = await fetch();
+        const response = await fetchFn(jiraApiUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${Buffer.from(`${email}:${apiToken}`).toString('base64')}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: bodyData
+        });
+        if (response.ok) {
+            const responseData = await response.json();
+            vscode.window.showInformationMessage(`JIRA ticket created successfully: ${responseData.key}`);
+        }
+        else {
+            const errorText = await response.text();
+            vscode.window.showErrorMessage(`Error creating JIRA ticket: ${response.status} - ${response.statusText} - ${errorText}`);
+        }
+    }
+    catch (error) {
+        vscode.window.showErrorMessage(`Error creating JIRA ticket: ${String(error)}`);
+    }
 }
 async function createJiraTicket() {
     const jiraInputModal = new jira_input_modal_1.JiraInputModal();

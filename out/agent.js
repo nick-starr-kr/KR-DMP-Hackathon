@@ -5,6 +5,8 @@ exports.handleChatPrompt = handleChatPrompt;
 exports.analyzeCodeQuality = analyzeCodeQuality;
 exports.analyzeTestCoverage = analyzeTestCoverage;
 exports.explainCode = explainCode;
+exports.createTicket = createTicket;
+exports.confirmJiraTicket = confirmJiraTicket;
 exports.generateUnitTests = generateUnitTests;
 exports.handleGenericChatPrompt = handleGenericChatPrompt;
 const tavily_search_1 = require("@langchain/community/tools/tavily_search");
@@ -42,6 +44,28 @@ async function explainCode(code) {
     const response = await agent.invoke({ messages: [new messages_1.SystemMessage("You are a digital programming assistant designed to explain functionality of code."),
             new messages_1.HumanMessage("Explain the code below:\n" + code)] }, { configurable: { thread_id: "42" } });
     return response.messages[response.messages.length - 1].content;
+}
+async function createTicket(code) {
+    const response = await agent.invoke({ messages: [new messages_1.SystemMessage("You are a digital programming assistant designed to analyze code. Your outputs must be as short and direct as possible."),
+            new messages_1.HumanMessage("Respond with only the name of the function:\n" + code)] }, { configurable: { thread_id: "42" } });
+    const name = response.messages[response.messages.length - 1].content;
+    const response2 = await agent.invoke({ messages: [new messages_1.SystemMessage("You are a digital programming assistant designed to analyze code. Your outputs must be as short and direct as possible."),
+            new messages_1.HumanMessage("Respond with only the a description of the code:\n" + code)] }, { configurable: { thread_id: "42" } });
+    const description = response2.messages[response2.messages.length - 1].content;
+    const response3 = await agent.invoke({ messages: [new messages_1.SystemMessage("You are a digital programming assistant designed to analyze code. Your outputs must be as short and direct as possible."),
+            new messages_1.HumanMessage("Respond with only the a defect in the code:\n" + code)] }, { configurable: { thread_id: "42" } });
+    const defect = response3.messages[response3.messages.length - 1].content;
+    const response4 = await agent.invoke({ messages: [new messages_1.SystemMessage("You are a digital programming assistant designed to analyze code. Your outputs must be as short and direct as possible."),
+            new messages_1.HumanMessage("Propose a fix for this code:\n" + code + "\n to solve the following defect: " + defect)] }, { configurable: { thread_id: "42" } });
+    const fix = response4.messages[response4.messages.length - 1].content;
+    const response5 = await agent.invoke({ messages: [new messages_1.SystemMessage("You are a digital programming assistant designed to analyze code. Your outputs must be as short and direct as possible."),
+            new messages_1.HumanMessage("Convert these strings into a cohesive paragraph: \n" + description + " " + defect + " " + fix)] }, { configurable: { thread_id: "42" } });
+    const output = response5.messages[response5.messages.length - 1].content;
+    return [name, output];
+}
+async function confirmJiraTicket(prompt) {
+    console.log(prompt);
+    return "Done";
 }
 async function generateUnitTests(code) {
     const response = await agent.invoke({ messages: [new messages_1.SystemMessage("You are a digital programming assistant designed to generate valuable unit tests for their code."),
