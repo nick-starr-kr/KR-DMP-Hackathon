@@ -213,7 +213,7 @@ export function activate(context: vscode.ExtensionContext) {
                 const ticketDescription = await vscode.window.showInputBox({ prompt: 'Confirm description', value: description});
                 
                 if (title && ticketDescription) {
-                    createJiraTicketLLM(title, ticketDescription, DEFAULT_ASSIGNEE, DEFAULT_REPORTER, DEFAULT_TYPE);
+                    createJiraTicketLLM(title, ticketDescription);
                 }
             } else {
                 vscode.window.showInformationMessage('No active editor found');

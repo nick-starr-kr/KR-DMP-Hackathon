@@ -36,8 +36,9 @@ const apiToken = process.env.ATLASSIAN_API_TOKEN;
 if (!email || !apiToken) {
     throw new Error("Missing JIRA credentials: Please set JIRA_EMAIL and JIRA_API_TOKEN in the .env file.");
 }
-async function createJiraTicketLLM(title, description, assignee, reporter, issueType) {
-    const jiraInputModal = new jira_input_modal_1.JiraInputModal();
+async function createJiraTicketLLM(title, description) {
+    const jiraInputModal = new jira_input_modal_1.SimpleJiraInputModal();
+    const { assignee, reporter, issueType } = await jiraInputModal.show();
     const bodyData = JSON.stringify({
         fields: {
             project: {

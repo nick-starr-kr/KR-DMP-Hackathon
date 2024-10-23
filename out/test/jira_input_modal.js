@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JiraInputModal = void 0;
+exports.SimpleJiraInputModal = exports.JiraInputModal = void 0;
 const vscode = __importStar(require("vscode"));
 const fetch_users_1 = require("./fetch_users");
 class JiraInputModal {
@@ -57,4 +57,29 @@ class JiraInputModal {
     }
 }
 exports.JiraInputModal = JiraInputModal;
+class SimpleJiraInputModal {
+    async show() {
+        // Fetch user IDs and display them for selection
+        const users = await (0, fetch_users_1.fetchUsers)(); // Fetch users from JIRA
+        const userItems = users.map(user => ({ label: user.displayName, id: user.id }));
+        // Select assignee
+        const assignee = await vscode.window.showQuickPick(userItems, { placeHolder: 'Select assignee' });
+        // Select reporter
+        const reporter = await vscode.window.showQuickPick(userItems, { placeHolder: 'Select reporter' });
+        // Define available issue types
+        const issueTypes = [
+            { label: 'Story', value: 'Story' },
+            { label: 'Task', value: 'Task' },
+            { label: 'Bug', value: 'Bug' }
+        ];
+        // Select issue type
+        const issueType = await vscode.window.showQuickPick(issueTypes, { placeHolder: 'Select issue type' });
+        return {
+            assignee: assignee ? { id: assignee.id } : { id: '' }, // Default to empty if not selected
+            reporter: reporter ? { id: reporter.id } : { id: '' }, // Default to empty if not selected
+            issueType: issueType ? issueType.value : 'Task' // Default to 'Task' if nothing is selected
+        };
+    }
+}
+exports.SimpleJiraInputModal = SimpleJiraInputModal;
 //# sourceMappingURL=jira_input_modal.js.map
