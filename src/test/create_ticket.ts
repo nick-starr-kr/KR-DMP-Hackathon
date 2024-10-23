@@ -3,6 +3,7 @@ const fetch = async () => (await import('node-fetch')).default;
 import { JiraInputModal } from './jira_input_modal'; 
 const dotenv = require('dotenv');
 dotenv.config();
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const email = process.env.ATLASSIAN_EMAIL || "anusha.chitranshi@gmail.com";
 const apiToken = process.env.ATLASSIAN_API_TOKEN;
