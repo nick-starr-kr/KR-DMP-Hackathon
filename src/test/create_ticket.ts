@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 const fetch = async () => (await import('node-fetch')).default;
-import { JiraInputModal } from './jira_input_modal'; 
+import { JiraInputModal, SimpleJiraInputModal } from './jira_input_modal'; 
 const dotenv = require('dotenv');
 dotenv.config();
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -12,8 +12,9 @@ if (!email || !apiToken) {
     throw new Error("Missing JIRA credentials: Please set JIRA_EMAIL and JIRA_API_TOKEN in the .env file.");
 }
 
-export async function createJiraTicketLLM(title : string, description : string, assignee: { id: string }, reporter: { id: string }, issueType : string) {
-    const jiraInputModal = new JiraInputModal();
+export async function createJiraTicketLLM(title: string, description: string) {
+    const jiraInputModal = new SimpleJiraInputModal();
+    const { assignee, reporter, issueType } = await jiraInputModal.show();
 
     const bodyData = JSON.stringify({
         fields: {
