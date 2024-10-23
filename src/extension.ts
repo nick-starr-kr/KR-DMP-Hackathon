@@ -3,7 +3,8 @@ import * as vscode from 'vscode';
 import { createJiraTicket, createJiraTicketLLM } from './test/create_ticket'; 
 import { fetchAssignedIssues } from './test/fetch_issues';
 import { fetchUsers } from './test/fetch_users'; 
-import { analyzeCodeQuality, explainCode, createTicket, handleChatPrompt } from './agent';
+import { analyzeCodeQuality, analyzeTestCoverage, explainCode, createTicket, generateUnitTests, handleChatPrompt, handleGenericChatPrompt } from './agent';
+import parseLCOV from 'parse-lcov';
 
 interface HackChatResult extends vscode.ChatResult {
     metadata: {
@@ -25,9 +26,17 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     // Scan Code for Defects Command
-    let scanCodeForDefectsDisposable = vscode.commands.registerCommand('hackathon.scanCodeForDefects', () => {
+    let scanCodeForDefectsDisposable = vscode.commands.registerCommand('hackathon.scanCodeForDefects', async () => {
         vscode.window.showInformationMessage('Scanning code for defects...');
-        // TODO: Call linting function here
+        const document = vscode.window.activeTextEditor?.document;
+            if (document !== undefined) {
+                const uri = document.uri;
+                let diagnostics = vscode.languages.getDiagnostics(uri);
+                const code = document.getText();
+                console.log(JSON.stringify(diagnostics));
+                let result = await analyzeCodeQuality(JSON.stringify(diagnostics), code);
+                vscode.window.showInformationMessage(result);
+            }
     });
 
     // Create JIRA Ticket Command
@@ -89,22 +98,35 @@ export function activate(context: vscode.ExtensionContext) {
     }
     });
 
-    // Lint Checks Command
-    let lintChecksDisposable = vscode.commands.registerCommand('hackathon.lintChecks', () => {
-        vscode.window.showInformationMessage('Running a lint check...');
-        // TODO: Call the function to conduct a lint check
-    });
-
     // Explain Code Command
-    let codeExplanationDisposable = vscode.commands.registerCommand('hackathon.codeExplanation', () => {
+    let codeExplanationDisposable = vscode.commands.registerCommand('hackathon.codeExplanation', async () => {
         vscode.window.showInformationMessage('Collecting explanation for the code...');
-        // TODO: Call the function to explain a given code
+        const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const selection = editor.selection;
+                const selectedText = editor.document.getText(selection);
+                vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+                const text = await explainCode(selectedText);
+                vscode.window.showInformationMessage(text);
+            } else {
+                vscode.window.showInformationMessage('No active editor found');
+            }
     });
 
     // Generate Unit Tests Command
-    let generateUnitTestsDisposable = vscode.commands.registerCommand('hackathon.generateUnitTests', () => {
+    let generateUnitTestsDisposable = vscode.commands.registerCommand('hackathon.generateUnitTests', async () => {
         vscode.window.showInformationMessage('Generating unit tests...');
-        // TODO: Call the function to generate unit tests
+
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const selection = editor.selection;
+            const selectedText = editor.document.getText(selection);
+            vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+            const text = await generateUnitTests(selectedText);
+            vscode.window.showInformationMessage(text);
+        } else {
+            vscode.window.showInformationMessage('No active editor found');
+        }
     });
 
     const chatHandler: vscode.ChatRequestHandler = async (
@@ -173,7 +195,7 @@ export function activate(context: vscode.ExtensionContext) {
                 let diagnostics = vscode.languages.getDiagnostics(uri);
                 const code = document.getText();
                 console.log(JSON.stringify(diagnostics));
-                stream.progress(await analyzeCodeQuality(JSON.stringify(diagnostics), code));
+                stream.markdown(await analyzeCodeQuality(JSON.stringify(diagnostics), code));
             }
             return { metadata: { command: request.command } };
 		}
@@ -205,7 +227,7 @@ export function activate(context: vscode.ExtensionContext) {
 		else if (request.command === 'runTestCoverageAnalysis') {
             vscode.window.showInformationMessage('Running test coverage analysis...');
             // Locate the lcov.info file
-            const lcovFiles = await vscode.workspace.findFiles('**/coverage/lcov.info', '**/node_modules/**', 1);
+            const lcovFiles = await vscode.workspace.findFiles('**/lcov.info', '**/node_modules/**', 1);
             let fileUri;
     
             if (lcovFiles.length > 0) {
@@ -228,14 +250,28 @@ export function activate(context: vscode.ExtensionContext) {
             const fileData = await vscode.workspace.fs.readFile(fileUri);
             const lcovContent = Buffer.from(fileData).toString('utf8');
             console.log(lcovContent);
-            //pass in lcovContent of lcov.info file into agent here
+
+            const lcovJSON = parseLCOV(lcovContent);
+            const document = vscode.window.activeTextEditor?.document;
+            
+            let fileCov = lcovJSON.find((file) => file.file === document?.fileName);
+            if (document !== undefined && fileCov !== undefined) {
+                const uri = document.uri;
+                 // Use stream.reference to add a clickable reference to the exact location
+                stream.reference(uri);
+                // Additionally, display a simple text or message
+                stream.progress(`Added reference for ${fileName}`);
+                const code = document.getText();
+                stream.markdown(await analyzeTestCoverage(JSON.stringify(fileCov), code));
+            }
+            else {
+                vscode.window.showErrorMessage('No coverage for this file found.');
+                return { metadata: { command: request.command } };
+            }            
            
             return { metadata: { command: request.command } };
 		}
-
 		else if (request.command === 'viewOutstandingTickets') {
-		}
-		else if (request.command === 'lintChecks') {
 		}
 		else if (request.command === 'codeExplanation') {
             const editor = vscode.window.activeTextEditor;
@@ -255,12 +291,33 @@ export function activate(context: vscode.ExtensionContext) {
             }
 		}
 		else if (request.command === 'generateUnitTests') {
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const selection = editor.selection;
+                const selectedText = editor.document.getText(selection);
+                vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+                const text = await generateUnitTests(selectedText);
+                stream.markdown(text);
+            } else {
+                vscode.window.showInformationMessage('No active editor found');
+            }
 		}
 		else {
-            botResponse = await handleChatPrompt(request.prompt);
-            stream.progress(botResponse);
-        }
-        // Append the new chat input and response to the conversation history
+            let code = '';
+            let diagnostics = '';
+            let filename = '';
+            const document = vscode.window.activeTextEditor?.document;
+            if (document !== undefined) {
+                filename = document.fileName;
+                const uri = document.uri;
+                diagnostics = JSON.stringify(vscode.languages.getDiagnostics(uri));
+                code = document.getText();
+            }
+		    botResponse = await handleGenericChatPrompt(request.prompt,code,diagnostics,filename);
+            stream.markdown(botResponse);
+
+		  }
+          // Append the new chat input and response to the conversation history
         previousConversation.push(`User: ${request.prompt}`);
         previousConversation.push(`Bot: ${botResponse}`);
 
@@ -283,18 +340,12 @@ export function activate(context: vscode.ExtensionContext) {
 				} satisfies vscode.ChatFollowup];
 			}
 			else if (result.metadata.command === 'scanForDefects') {
-                return [{
-					prompt: 'Just testing this out!',
-					label: vscode.l10n.t('Would you like to create a Jira ticket for these improvements?')
-				} satisfies vscode.ChatFollowup];
 			}
 			else if (result.metadata.command === 'createJiraTicket') {
 			}
 			else if (result.metadata.command === 'runTestCoverageAnalysis') {
 			}
 			else if (result.metadata.command === 'viewOutstandingTickets') {
-			}
-			else if (result.metadata.command === 'lintChecks') {
 			}
 			else if (result.metadata.command === 'codeExplanation') {
 			}
@@ -310,7 +361,6 @@ export function activate(context: vscode.ExtensionContext) {
         createJiraTicketDisposable,
         runTestCoverageAnalysisDisposable,
         viewOutstandingTicketsDisposable,
-        lintChecksDisposable,
         codeExplanationDisposable,
         generateUnitTestsDisposable,
         hackChat
