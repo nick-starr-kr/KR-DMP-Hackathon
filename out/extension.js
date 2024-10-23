@@ -108,7 +108,17 @@ function activate(context) {
     // Generate Unit Tests Command
     let generateUnitTestsDisposable = vscode.commands.registerCommand('hackathon.generateUnitTests', () => {
         vscode.window.showInformationMessage('Generating unit tests...');
-        // TODO: Call the function to generate unit tests
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const selection = editor.selection;
+            const selectedText = editor.document.getText(selection);
+            vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+            const text = await (0, agent_1.generateUnitTests)(selectedText);
+            vscode.window.showInformationMessage(text);
+        }
+        else {
+            vscode.window.showInformationMessage('No active editor found');
+        }
     });
     const chatHandler = async (request, chatContext, stream, token) => {
         //get reference to the active text editor
@@ -211,7 +221,17 @@ function activate(context) {
             const fileData = await vscode.workspace.fs.readFile(fileUri);
             const lcovContent = Buffer.from(fileData).toString('utf8');
             console.log(lcovContent);
-            //pass in lcovContent of lcov.info file into agent here
+            const lcovJSON = (0, parse_lcov_1.default)(lcovContent);
+            const document = vscode.window.activeTextEditor?.document;
+            if (document !== undefined) {
+                const uri = document.uri;
+                // Use stream.reference to add a clickable reference to the exact location
+                stream.reference(uri);
+                // Additionally, display a simple text or message
+                stream.progress(`Added reference for ${fileName}`);
+                const code = document.getText();
+                stream.markdown(await (0, agent_1.analyzeTestCoverage)(lcovContent, code));
+            }
             return { metadata: { command: request.command } };
         }
         else if (request.command === 'viewOutstandingTickets') {
@@ -236,6 +256,17 @@ function activate(context) {
             }
         }
         else if (request.command === 'generateUnitTests') {
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const selection = editor.selection;
+                const selectedText = editor.document.getText(selection);
+                vscode.window.showInformationMessage(`Selected text: ${selectedText}`);
+                const text = await (0, agent_1.generateUnitTests)(selectedText);
+                stream.markdown(text);
+            }
+            else {
+                vscode.window.showInformationMessage('No active editor found');
+            }
         }
         else {
             botResponse = await (0, agent_1.handleChatPrompt)(request.prompt);
