@@ -220,14 +220,19 @@ export function activate(context: vscode.ExtensionContext) {
             const lcovJSON = parseLCOV(lcovContent);
             const document = vscode.window.activeTextEditor?.document;
             
-            if (document !== undefined) {
+            let fileCov = lcovJSON.find((file) => file.file === document?.fileName);
+            if (document !== undefined && fileCov !== undefined) {
                 const uri = document.uri;
                  // Use stream.reference to add a clickable reference to the exact location
                 stream.reference(uri);
                 // Additionally, display a simple text or message
                 stream.progress(`Added reference for ${fileName}`);
                 const code = document.getText();
-                stream.markdown(await analyzeTestCoverage(lcovContent, code));
+                stream.markdown(await analyzeTestCoverage(JSON.stringify(fileCov), code));
+            }
+            else {
+                vscode.window.showErrorMessage('No coverage for this file found.');
+                return { metadata: { command: request.command } };
             }            
            
             return { metadata: { command: request.command } };
