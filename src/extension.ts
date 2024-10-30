@@ -43,9 +43,49 @@ export function activate(context: vscode.ExtensionContext) {
     let createJiraTicketDisposable = vscode.commands.registerCommand('hackathon.createJiraTicket', createJiraTicket);
 
     // Run Test Coverage Analysis Command
-    let runTestCoverageAnalysisDisposable = vscode.commands.registerCommand('hackathon.runTestCoverageAnalysis', () => {
+    let runTestCoverageAnalysisDisposable = vscode.commands.registerCommand('hackathon.runTestCoverageAnalysis', async () => {
         vscode.window.showInformationMessage('Running test coverage analysis...');
-        console.log(process.env.ATLASSIAN_EMAIL);
+
+        vscode.window.showInformationMessage('Running test coverage analysis...');
+        // Locate the lcov.info file
+        const lcovFiles = await vscode.workspace.findFiles('**/lcov.info', '**/node_modules/**', 1);
+        let fileUri;
+
+        if (lcovFiles.length > 0) {
+            fileUri = lcovFiles[0];
+        } else {
+            fileUri = await vscode.window.showOpenDialog({
+                canSelectFiles: true,
+                canSelectFolders: false,
+                filters: { 'LCOV Files': ['info'] },
+                openLabel: 'Select lcov.info file'
+            }).then(fileUris => fileUris ? fileUris[0] : undefined);
+        }
+
+        if (!fileUri) {
+            vscode.window.showErrorMessage('No lcov.info file selected or found.');
+            return;
+        }
+
+        // Read the file contents
+        const fileData = await vscode.workspace.fs.readFile(fileUri);
+        const lcovContent = Buffer.from(fileData).toString('utf8');
+        console.log(lcovContent);
+
+        const lcovJSON = parseLCOV(lcovContent);
+        const document = vscode.window.activeTextEditor?.document;
+        console.log(document?.fileName);
+        
+        let fileCov = lcovJSON.find((file) => file.file === document?.fileName);
+        if (document !== undefined && fileCov !== undefined) {
+            const uri = document.uri;
+            const code = document.getText();
+            vscode.window.showInformationMessage(await analyzeTestCoverage(JSON.stringify(fileCov), code));
+        }
+        else {
+            vscode.window.showErrorMessage('No coverage for this file found.');
+            return
+        }            
         // TODO: Call the function to run test coverage analysis
     });
 
@@ -173,17 +213,8 @@ export function activate(context: vscode.ExtensionContext) {
         // }
 
         let botResponse: string = '';
-		if (request.command === 'testCommand') {
-            stream.progress('You\'re using my test command!');
-            stream.button({
-                command: 'hackathon.helloWorld',
-                title: vscode.l10n.t('Run test command')
-            });
-            botResponse = await handleChatPrompt(request.prompt);
-            stream.progress(botResponse);
-        }
-          
-		else if (request.command === 'scanForDefects') {
+        
+        if (request.command === 'scanForDefects') {
             const document = vscode.window.activeTextEditor?.document;
             
             if (document !== undefined) {
@@ -253,6 +284,7 @@ export function activate(context: vscode.ExtensionContext) {
 
             const lcovJSON = parseLCOV(lcovContent);
             const document = vscode.window.activeTextEditor?.document;
+            console.log(document?.fileName);
             
             let fileCov = lcovJSON.find((file) => file.file === document?.fileName);
             if (document !== undefined && fileCov !== undefined) {

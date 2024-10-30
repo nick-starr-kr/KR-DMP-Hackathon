@@ -50,10 +50,6 @@
         "isSticky": true,
         "commands": [
           {
-            "name": "testCommand",
-            "description": "Test command!"
-          },
-          {
             "name": "scanForDefects",
             "description": "Scan Code for Defects"
           },
